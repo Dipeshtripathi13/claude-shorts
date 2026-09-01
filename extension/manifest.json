@@ -1,0 +1,23 @@
+{
+  "manifest_version": 3,
+  "name": "Shorts while you wait",
+  "version": "0.1.0",
+  "description": "Suggests relevant YouTube Shorts in a side panel while Claude or ChatGPT is thinking.",
+  "permissions": ["sidePanel", "storage"],
+  "host_permissions": ["http://127.0.0.1/*", "http://localhost/*"],
+  "background": { "service_worker": "background.js", "type": "module" },
+  "side_panel": { "default_path": "sidepanel.html" },
+  "action": { "default_title": "Shorts while you wait" },
+  "options_page": "options.html",
+  "content_scripts": [
+    {
+      "matches": [
+        "https://claude.ai/*",
+        "https://chatgpt.com/*",
+        "https://chat.openai.com/*"
+      ],
+      "js": ["content/observer.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}

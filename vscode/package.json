@@ -1,0 +1,58 @@
+{
+  "name": "claude-shorts-vscode",
+  "displayName": "Shorts while you wait",
+  "description": "Watch a relevant YouTube Short in the sidebar while Claude Code is thinking.",
+  "version": "0.1.0",
+  "publisher": "claude-shorts",
+  "license": "MIT",
+  "engines": { "vscode": "^1.85.0" },
+  "categories": ["Other"],
+  "activationEvents": [],
+  "main": "./out/extension.js",
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        { "id": "claudeShorts", "title": "Shorts", "icon": "media/icon.svg" }
+      ]
+    },
+    "views": {
+      "claudeShorts": [
+        { "id": "claudeShorts.panel", "name": "While you wait", "type": "webview" }
+      ]
+    },
+    "commands": [
+      { "command": "claudeShorts.open", "title": "Shorts: Open panel" },
+      { "command": "claudeShorts.reload", "title": "Shorts: Reconnect to daemon" }
+    ],
+    "configuration": {
+      "title": "Shorts while you wait",
+      "properties": {
+        "claudeShorts.port": {
+          "type": "number",
+          "default": 8787,
+          "description": "Port the local claude-shorts daemon listens on."
+        },
+        "claudeShorts.autoStartDaemon": {
+          "type": "boolean",
+          "default": true,
+          "description": "Start the daemon with `shorts serve` if it is not already running."
+        },
+        "claudeShorts.command": {
+          "type": "string",
+          "default": "shorts",
+          "description": "Path to the claude-shorts CLI."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "vscode:prepublish": "npm run compile"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "@types/vscode": "^1.85.0",
+    "typescript": "^5.7.0"
+  }
+}

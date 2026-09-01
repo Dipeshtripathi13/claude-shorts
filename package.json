@@ -1,0 +1,20 @@
+{
+  "name": "claude-shorts",
+  "version": "0.1.0",
+  "description": "Suggests relevant YouTube Shorts while Claude or ChatGPT is thinking, so the wait teaches you something.",
+  "type": "module",
+  "license": "MIT",
+  "bin": { "shorts": "dist/cli.js", "claude-shorts": "dist/cli.js" },
+  "files": ["dist", "README.md", "LICENSE"],
+  "engines": { "node": ">=20.10" },
+  "scripts": {
+    "build": "tsc -p tsconfig.json && chmod +x dist/cli.js dist/mcp/server.js",
+    "dev": "tsc -p tsconfig.json --watch",
+    "start": "node dist/cli.js serve",
+    "test": "node --test dist/test/*.test.js",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": ["claude", "claude-code", "chatgpt", "youtube-shorts", "mcp", "hooks", "learning"],
+  "dependencies": {},
+  "devDependencies": { "@types/node": "^22.10.0", "typescript": "^5.7.0" }
+}

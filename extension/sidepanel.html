@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Shorts</title>
+<style>
+  :root { color-scheme: light dark; }
+  html, body { margin: 0; height: 100%; }
+  body {
+    font: 13px/1.5 ui-sans-serif, -apple-system, "Segoe UI", system-ui, sans-serif;
+    background: Canvas; color: CanvasText; display: flex; flex-direction: column;
+  }
+  iframe { flex: 1; border: 0; width: 100%; }
+  .setup { padding: 20px; }
+  .setup h1 { font-size: 15px; margin: 0 0 10px; }
+  .setup p { color: GrayText; margin: 0 0 10px; }
+  .setup code {
+    background: color-mix(in srgb, CanvasText 8%, Canvas);
+    padding: 2px 5px; border-radius: 4px; font-size: 11.5px;
+  }
+  .setup ol { padding-left: 18px; margin: 0 0 14px; }
+  .setup li { margin-bottom: 6px; }
+  button {
+    font: inherit; padding: 6px 12px; border-radius: 6px; cursor: pointer;
+    border: 1px solid color-mix(in srgb, CanvasText 25%, Canvas);
+    background: Canvas; color: CanvasText;
+  }
+  .err { color: #c0392b; margin-top: 10px; }
+</style>
+</head>
+<body>
+  <div id="setup" class="setup" hidden>
+    <h1>Connect to the local daemon</h1>
+    <p>Suggestions come from a small program running on your own machine.
+       Nothing is sent anywhere else.</p>
+    <ol>
+      <li>In a terminal, run <code>shorts pair</code></li>
+      <li>Come back here within two minutes and click Pair</li>
+    </ol>
+    <p>Port <input id="port" type="number" value="8787" style="width:6em"></p>
+    <button id="pair">Pair</button>
+    <div id="err" class="err"></div>
+  </div>
+  <iframe id="panel" hidden allow="autoplay; encrypted-media; picture-in-picture; fullscreen"></iframe>
+  <script src="sidepanel.js"></script>
+</body>
+</html>

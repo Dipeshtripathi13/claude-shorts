@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Shorts while you wait — options</title>
+<style>
+  :root { color-scheme: light dark; }
+  body {
+    font: 14px/1.6 ui-sans-serif, -apple-system, "Segoe UI", system-ui, sans-serif;
+    background: Canvas; color: CanvasText; max-width: 34em; margin: 40px auto; padding: 0 20px;
+  }
+  h1 { font-size: 17px; }
+  p { color: GrayText; }
+  code { background: color-mix(in srgb, CanvasText 8%, Canvas); padding: 2px 5px; border-radius: 4px; font-size: 12.5px; }
+  label { display: block; margin: 14px 0 4px; font-weight: 600; }
+  input { font: inherit; padding: 5px 8px; border-radius: 6px;
+          border: 1px solid color-mix(in srgb, CanvasText 25%, Canvas); background: Canvas; color: CanvasText; }
+  button { font: inherit; padding: 6px 14px; border-radius: 6px; margin-top: 16px; cursor: pointer;
+           border: 1px solid color-mix(in srgb, CanvasText 25%, Canvas); background: Canvas; color: CanvasText; }
+  .status { margin-top: 14px; }
+  .ok { color: #2f7d5a; }
+  .err { color: #c0392b; }
+</style>
+</head>
+<body>
+  <h1>Shorts while you wait</h1>
+  <p>This extension watches only the chat page you have open, and forwards what
+     you typed to a daemon on your own machine. It holds no account credentials
+     and talks to no server other than <code>127.0.0.1</code>.</p>
+
+  <label for="port">Daemon port</label>
+  <input id="port" type="number" value="8787">
+
+  <label for="token">Token</label>
+  <input id="token" type="password" size="40" placeholder="paste, or use Pair below">
+
+  <div>
+    <button id="save">Save token</button>
+    <button id="pair">Pair automatically</button>
+  </div>
+  <p style="margin-top:8px">For automatic pairing, run <code>shorts pair</code> first, then click within two minutes.</p>
+  <div id="status" class="status"></div>
+
+  <script src="options.js"></script>
+</body>
+</html>
