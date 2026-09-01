@@ -7,6 +7,22 @@ import { embedUrl } from './youtube.js';
 const run = promisify(execFile);
 
 /**
+ * YouTube's own "Duration: under 4 minutes" search filter, as the opaque
+ * protobuf blob the results page uses. It is the same cut the Data API makes
+ * with videoDuration=short, so both providers see a comparable candidate pool.
+ *
+ * This matters more than it looks: a plain `ytsearch:` query returns YouTube's
+ * default ranking, which is dominated by long-form video. Measured over 25
+ * results for "photosynthesis explained", the plain query yielded 2 clips under
+ * three minutes; with this filter, 17.
+ */
+const UNDER_4_MIN = 'EgIYAQ%3D%3D';
+
+function searchUrl(query: string): string {
+  return `https://www.youtube.com/results?search_query=${encodeURIComponent(query)}&sp=${UNDER_4_MIN}`;
+}
+
+/**
  * No-API-key fallback using a local yt-dlp binary.
  *
  * Trade-offs versus the official API: no daily quota, but slower (a few seconds),
@@ -29,15 +45,16 @@ export class YtDlpProvider implements Provider {
   }
 
   async search(opts: SearchOptions): Promise<ShortVideo[]> {
-    const n = Math.min(30, Math.max(10, opts.count * 4));
+    const n = Math.min(40, Math.max(15, opts.count * 5));
     let stdout: string;
     try {
       ({ stdout } = await run(this.binary, [
-        `ytsearch${n}:${opts.query}`,
+        searchUrl(opts.query),
         '--flat-playlist',
         '--dump-json',
         '--no-warnings',
         '--ignore-errors',
+        '--playlist-end', String(n),
         '--socket-timeout', '8',
       ], { timeout: 25_000, maxBuffer: 12 * 1024 * 1024 }));
     } catch (e) {
