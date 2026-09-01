@@ -4,9 +4,18 @@
   "description": "Suggests relevant YouTube Shorts while Claude or ChatGPT is thinking, so the wait teaches you something.",
   "type": "module",
   "license": "MIT",
-  "bin": { "shorts": "dist/cli.js", "claude-shorts": "dist/cli.js" },
-  "files": ["dist", "README.md", "LICENSE"],
-  "engines": { "node": ">=20.10" },
+  "bin": {
+    "shorts": "dist/cli.js",
+    "claude-shorts": "dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=20.10"
+  },
   "scripts": {
     "build": "tsc -p tsconfig.json && chmod +x dist/cli.js dist/mcp/server.js",
     "dev": "tsc -p tsconfig.json --watch",
@@ -14,7 +23,27 @@
     "test": "node --test dist/test/*.test.js",
     "prepublishOnly": "npm run build"
   },
-  "keywords": ["claude", "claude-code", "chatgpt", "youtube-shorts", "mcp", "hooks", "learning"],
+  "keywords": [
+    "claude",
+    "claude-code",
+    "chatgpt",
+    "youtube-shorts",
+    "mcp",
+    "hooks",
+    "learning"
+  ],
   "dependencies": {},
-  "devDependencies": { "@types/node": "^22.10.0", "typescript": "^5.7.0" }
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "typescript": "^5.7.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Dipeshtripathi13/claude-shorts.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Dipeshtripathi13/claude-shorts/issues"
+  },
+  "homepage": "https://github.com/Dipeshtripathi13/claude-shorts#readme",
+  "author": "Dipesh Tripathi"
 }

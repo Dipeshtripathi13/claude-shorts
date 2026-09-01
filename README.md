@@ -88,7 +88,7 @@ shorts panel                     # terminal panel — put it in a split beside C
 From source:
 
 ```bash
-git clone <this repo> && cd claude-shorts
+git clone https://github.com/Dipeshtripathi13/claude-shorts.git && cd claude-shorts
 npm install && npm run build
 npm link            # puts `shorts` on your PATH
 shorts setup
