@@ -20,8 +20,9 @@
     "build": "tsc -p tsconfig.json && chmod +x dist/cli.js dist/mcp/server.js",
     "dev": "tsc -p tsconfig.json --watch",
     "start": "node dist/cli.js serve",
-    "test": "node --test dist/test/",
-    "prepublishOnly": "npm run build"
+    "test": "node --test",
+    "prepublishOnly": "npm run build",
+    "pretest": "npm run build"
   },
   "keywords": [
     "claude",
