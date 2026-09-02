@@ -6,8 +6,8 @@
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <title>Player</title>
 <style>
-  html, body { margin: 0; height: 100%; background: #000; }
-  iframe { border: 0; width: 100%; height: 100%; display: block; }
+  html, body { margin: 0; height: 100%; background: #000; overflow: hidden; }
+  #player, iframe { width: 100%; height: 100%; border: 0; display: block; }
   p {
     color: #bbb; font: 13px/1.5 system-ui, sans-serif;
     text-align: center; padding: 24px;
@@ -15,42 +15,76 @@
 </style>
 </head>
 <body>
+<div id="player"></div>
 <script>
 /*
  * A playback shim, and nothing else.
  *
- * YouTube requires an HTTP Referer to identify who is embedding a player, and
- * Chrome sends none from a chrome-extension:// page — an embed there fails with
- * "Video player configuration error (153)". Framing this page instead gives
- * YouTube a real https origin to see, so the player works.
+ * Two problems are solved here, both caused by where the extension lives.
  *
- * Deliberately trivial: it takes a video id and renders the official embed. No
- * tracking, no analytics, no logic that belongs in the extension.
+ * 1. YouTube requires an HTTP Referer to identify who is embedding a player,
+ *    and Chrome sends none from a chrome-extension:// page, so embedding there
+ *    fails with "Video player configuration error (153)". Framing this page
+ *    instead gives YouTube a real https origin.
+ *
+ * 2. A plain ?autoplay=1 does not start the video, because user activation does
+ *    not propagate into a cross-origin iframe created after the click. The
+ *    IFrame Player API does: playVideo() on the ready event starts playback
+ *    using the autoplay permission delegated down the frame chain, so the
+ *    viewer's single click on the thumbnail is enough.
+ *
+ * Deliberately trivial otherwise: no tracking, no analytics, and no logic that
+ * belongs in the extension.
  */
 (function () {
   var id = new URLSearchParams(location.search).get('v') || '';
 
   // Only ever interpolate something that looks like a YouTube id.
   if (!/^[A-Za-z0-9_-]{6,24}$/.test(id)) {
+    document.body.textContent = '';
     var p = document.createElement('p');
     p.textContent = 'No valid video id given.';
     document.body.appendChild(p);
     return;
   }
 
-  var params = new URLSearchParams({
-    autoplay: '1',
-    rel: '0',
-    modestbranding: '1',
-    playsinline: '1',
-  });
+  /** If the API cannot load, a plain embed still plays on one further click. */
+  function fallback() {
+    if (window.__tangentPlayerStarted) return;
+    window.__tangentPlayerStarted = true;
+    var f = document.createElement('iframe');
+    f.src = 'https://www.youtube-nocookie.com/embed/' + id +
+            '?autoplay=1&rel=0&modestbranding=1&playsinline=1';
+    f.title = 'YouTube video player';
+    f.setAttribute('allow', 'autoplay; encrypted-media; picture-in-picture; web-share');
+    f.setAttribute('allowfullscreen', '');
+    var host = document.getElementById('player');
+    host.parentNode.replaceChild(f, host);
+  }
 
-  var f = document.createElement('iframe');
-  f.src = 'https://www.youtube-nocookie.com/embed/' + id + '?' + params.toString();
-  f.title = 'YouTube video player';
-  f.setAttribute('allow', 'accelerometer; autoplay; encrypted-media; picture-in-picture; web-share');
-  f.setAttribute('allowfullscreen', '');
-  document.body.appendChild(f);
+  window.onYouTubeIframeAPIReady = function () {
+    if (window.__tangentPlayerStarted) return;
+    window.__tangentPlayerStarted = true;
+    new YT.Player('player', {
+      videoId: id,
+      host: 'https://www.youtube-nocookie.com',
+      playerVars: { autoplay: 1, rel: 0, modestbranding: 1, playsinline: 1 },
+      events: {
+        onReady: function (e) {
+          // Explicit play: the surest way to start without activation here.
+          try { e.target.playVideo(); } catch (err) { /* user can press play */ }
+        },
+      },
+    });
+  };
+
+  var api = document.createElement('script');
+  api.src = 'https://www.youtube.com/iframe_api';
+  api.onerror = fallback;
+  document.head.appendChild(api);
+
+  // If the API has not initialised in a few seconds, embed directly instead.
+  setTimeout(fallback, 4000);
 })();
 </script>
 </body>

@@ -129,7 +129,7 @@ function paint() {
   if (playing && playerBase) {
     const f = document.createElement('iframe');
     f.src = `${playerBase}?v=${encodeURIComponent(v.id)}`;
-    f.allow = 'accelerometer; autoplay; encrypted-media; picture-in-picture; web-share';
+    f.allow = 'autoplay; encrypted-media; picture-in-picture; web-share';
     f.allowFullscreen = true;
     f.title = v.title;
     frame.appendChild(f);
