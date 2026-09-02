@@ -1,8 +1,8 @@
 Tangent notices when you ask an AI assistant about something worth
 understanding, and finds YouTube Shorts that explain it.
 
-Ask Claude to plan a database migration, and a button appears in the side
-panel: "Find explainers: database migration." Click it and you get a handful
+Ask your assistant to plan a database migration, and a button appears in the
+side panel: "Find explainers: database migration." Click it and you get a handful
 of 15 to 90 second Shorts on that exact topic, ranked for brevity and
 relevance, playable right there beside the conversation. Ignore it and
 nothing happens at all.
@@ -56,10 +56,11 @@ https://dipeshtripathi13.github.io/claude-shorts/privacy.html
 
 WHERE IT WORKS
 
-Claude, ChatGPT, Gemini, Google AI Studio, Grok, DeepSeek, Qwen, Kimi,
-Perplexity, Mistral, Microsoft Copilot, Poe, Meta AI and HuggingChat.
+Tangent runs on the major AI chat assistants. The exact sites are declared in
+this listing's permissions and shown in the extension's own settings, where each
+one can be switched off individually.
 
-Any of them can be switched off individually in settings.
+It does nothing at all on any other site.
 
 
 SETUP

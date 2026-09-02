@@ -47,7 +47,8 @@ Tangent — Explainers for AI Chats
 Spots the concept in your AI chat message and finds YouTube Shorts that explain it. Nothing is searched until you click.
 ```
 
-**Detailed description**
+**Detailed description** — the full text is in `listing-description.txt`,
+which is the file to paste. Summarised here:
 
 ```
 Tangent notices when you ask an AI assistant about something worth
@@ -73,10 +74,8 @@ no "up next". Nothing ever plays until you press play.
 
 PRIVACY
 
-Tangent reads only the message you just typed, and only on AI chat sites:
-Claude, ChatGPT, Gemini, Grok, DeepSeek, Qwen, Kimi, Perplexity, Mistral,
-Copilot, Poe, Meta AI and HuggingChat. Any of them can be switched off
-individually in settings.
+Tangent reads only the message you just typed, and only on AI chat sites. Any
+of them can be switched off individually in settings.
 
 Before anything is searched, code, file paths, URLs, email addresses and
 anything shaped like an API key or password is stripped out. If a message
@@ -98,10 +97,19 @@ https://github.com/Dipeshtripathi13/claude-shorts
 Not affiliated with Google, YouTube, Anthropic or OpenAI.
 ```
 
-**Note on the host list.** Sixteen chat sites means a broader install warning
-than three did. Expect a reviewer to ask why; the answer is that they are all
-the same single purpose, the list contains only AI chat assistants, and each is
-individually switchable in settings.
+**Do not list the supported sites by name in the public description.** The
+first submission was rejected under Keyword Spam (reference "Yellow Argon") for
+exactly that: an enumerated run of third-party product names reads as keyword
+stuffing whatever the intent. Describe the capability instead, and let the
+declared permissions and the extension's own settings show which sites.
+
+Naming them is still correct — and expected — in the two places that are
+disclosure rather than marketing: the host permission justification and the
+privacy policy.
+
+**Note on the host list.** Sixteen chat sites means a broad install warning.
+Expect a reviewer to ask why; the answer is that they are all the same single
+purpose and each is individually switchable in settings.
 
 **Homepage URL:** `https://dipeshtripathi13.github.io/claude-shorts/`
 **Privacy policy URL:** `https://dipeshtripathi13.github.io/claude-shorts/privacy.html`
