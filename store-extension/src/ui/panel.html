@@ -21,14 +21,18 @@
   <section id="paneSetup" class="pane" hidden>
     <p class="found" id="setupTopic" hidden></p>
     <h2>One-time setup</h2>
-    <p>Tangent searches YouTube with <strong>your own</strong> API key, so your
-       usage is yours and nothing is routed through anyone else's server.</p>
+    <p>Tangent searches YouTube with <strong>your own</strong> free API key, so
+       your usage is yours and nothing goes through anyone else's server.</p>
     <ol>
-      <li>Create a free key in the Google Cloud console</li>
-      <li>Enable <em>YouTube Data API v3</em></li>
-      <li>Paste the key into settings</li>
+      <li><a id="lnkProject" href="https://console.cloud.google.com/projectcreate" target="_blank" rel="noopener">Create a Google Cloud project</a></li>
+      <li><a id="lnkEnable" href="https://console.cloud.google.com/apis/library/youtube.googleapis.com" target="_blank" rel="noopener">Enable YouTube Data API v3</a></li>
+      <li>Credentials &rarr; Create credentials &rarr; API key</li>
     </ol>
-    <button class="primary" id="btnOpenOptions">Open settings</button>
+    <label class="field" for="setupKey">Paste it here</label>
+    <input id="setupKey" type="password" autocomplete="off" spellcheck="false" placeholder="AIza…">
+    <button class="primary" id="btnSaveKey">Save key</button>
+    <p class="status" id="setupStatus"></p>
+    <button class="link" id="btnOpenOptions">More settings</button>
   </section>
 
   <!-- Waiting for a message -->

@@ -250,6 +250,38 @@ $('btnOpen').addEventListener('click', () => {
 $('btnBack').addEventListener('click', () => show(offer ? 'paneOffer' : 'paneIdle'));
 $('btnSettings').addEventListener('click', () => chrome.runtime.openOptionsPage());
 $('btnOpenOptions').addEventListener('click', () => chrome.runtime.openOptionsPage());
+
+// Setting the key here rather than sending people to a separate page: this is
+// the one thing standing between install and the extension working, and it is
+// two fields, not a settings screen.
+$('setupKey').addEventListener('keydown', (e) => { if (e.key === 'Enter') saveKey(); });
+$('btnSaveKey').addEventListener('click', saveKey);
+
+async function saveKey() {
+  const apiKey = $('setupKey').value.trim();
+  const status = $('setupStatus');
+  if (!apiKey) { status.textContent = 'Paste a key first.'; status.className = 'status bad'; return; }
+
+  status.textContent = 'Checking…';
+  status.className = 'status';
+  const check = await send({ type: 'verify-key', apiKey });
+  if (!check?.ok) {
+    status.textContent = `YouTube rejected that key: ${check?.error ?? 'unknown error'}`;
+    status.className = 'status bad';
+    return;
+  }
+
+  await send({ type: 'save-settings', patch: { apiKey } });
+  hasKey = true;
+  status.textContent = 'Saved. Ask your assistant something.';
+  status.className = 'status ok';
+  const state = await send({ type: 'get-state' });
+  if (state?.ok) {
+    $('quota').textContent = `${state.quota.remaining}/${state.quota.limit} searches left today`;
+    if (state.offer) { renderOffer(state.offer); return; }
+  }
+  show('paneIdle');
+}
 // The content script frames this page and owns whether it is visible, so the
 // close button asks the parent rather than trying to hide itself.
 $('btnClose').addEventListener('click', () => {
