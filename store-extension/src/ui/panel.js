@@ -15,8 +15,7 @@ let offer = null;
 let result = null;
 let hasKey = false;
 let index = 0;
-/** Whether the current clip is playing inline, and the page that hosts it. */
-let playing = false;
+/** The https page that hosts the embed; empty means play in a window. */
 let playerBase = '';
 
 function show(pane) {
@@ -103,7 +102,6 @@ function renderResults(next) {
   result = next;
   offer = null;
   index = 0;
-  playing = false;
   say(`Searched “${next.topic.query}” · ${next.cached ? 'from your saved results' : 'fresh'}`);
   show('paneResults');
   try {
@@ -126,7 +124,12 @@ function paint() {
   img.loading = 'lazy';
   img.referrerPolicy = 'no-referrer';
 
-  if (playing && playerBase) {
+  if (playerBase) {
+    // The player is loaded with the result rather than behind our own play
+    // button. Lazy-loading cost two clicks: ours, then YouTube's, because user
+    // activation does not reach a cross-origin iframe created after the click
+    // and no autoplay trick gets around that. Loading it up front leaves
+    // exactly one click - YouTube's own - and nothing plays until it is made.
     const f = document.createElement('iframe');
     f.src = `${playerBase}?v=${encodeURIComponent(v.id)}`;
     f.allow = 'autoplay; encrypted-media; picture-in-picture; web-share';
@@ -134,15 +137,14 @@ function paint() {
     f.title = v.title;
     frame.appendChild(f);
   } else {
+    // No player page configured: fall back to the thumbnail and a popup window.
     const btn = document.createElement('button');
     btn.className = 'play';
     btn.setAttribute('aria-label', `Play: ${v.title}`);
     const glyph = document.createElement('span');
     glyph.textContent = '▶';
     btn.appendChild(glyph);
-    btn.addEventListener('click', () => {
-      if (playerBase) { playing = true; paint(); } else { playVideo(v); }
-    });
+    btn.addEventListener('click', () => playVideo(v));
     frame.append(img, btn);
   }
 
@@ -162,7 +164,7 @@ function paint() {
     t.loading = 'lazy';
     t.referrerPolicy = 'no-referrer';
     b.appendChild(t);
-    b.addEventListener('click', () => { index = i; playing = false; paint(); });
+    b.addEventListener('click', () => { index = i; paint(); });
     strip.appendChild(b);
   });
 }
@@ -206,7 +208,6 @@ function openFallback(url, width, height, left, top) {
 function move(delta) {
   if (!result) return;
   index = (index + delta + result.videos.length) % result.videos.length;
-  playing = false;
   paint();
 }
 
@@ -263,7 +264,7 @@ async function showBuild(workerBuild) {
   let panelBuild = 'dev';
   try {
     ({ BUILD: panelBuild } = await import('../build.js'));
-  } catch { /* running unpackaged */ }
+  } catch { /* built file absent when running straight from src */ }
   // Showing both makes a half-updated extension obvious: the panel can reload
   // with new code while the service worker is still running the old bundle.
   $('attribution').textContent = workerBuild && workerBuild !== panelBuild

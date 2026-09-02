@@ -65,7 +65,7 @@ It knows a question from a chore. "What is photosynthesis" gets a button.
 "Rerun the tests", "commit this", "yes" get nothing at all.
 
 No feed. A fixed set of results, no autoplay, no sound, no recommendations,
-no "up next". Nothing loads from YouTube until you press play.
+no "up next". Nothing ever plays until you press play.
 
 PRIVACY
 
@@ -172,9 +172,10 @@ Being straight about these prevents one-star reviews:
   (which Brave does not reliably support).
 - **Reload an already-open chat tab** after installing — browsers do not inject
   content scripts into pages that were already loaded.
-- **Clips open in a small window, not inline.** YouTube requires a Referer
-  header that Chrome does not send from extension pages (error 153). Worth
-  stating in the listing so it does not read as a bug.
+- **Clips play inline via a small hosted page.** YouTube requires a Referer
+  header that Chrome does not send from extension pages (error 153), so the
+  panel frames a page on GitHub Pages that does nothing but embed the official
+  player. The URL is a setting; clearing it opens clips in a window instead.
 
 ---
 

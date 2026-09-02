@@ -78,8 +78,14 @@ would make the extension depend on a server it deliberately does not have. So a
 clip opens in a compact popup window instead: always works, no infrastructure,
 and it sits beside the conversation.
 
-If you later host a wrapper page, `playVideo()` in `src/ui/panel.js` is the one
-function to change.
+`docs/player.html` in this repository is that page, served from GitHub Pages.
+The URL lives in settings, so anyone can host their own copy or clear it to fall
+back to opening clips in a window.
+
+The player is loaded together with the result rather than behind a play button.
+Lazy-loading cost two clicks — ours, then YouTube's — because user activation
+does not reach a cross-origin iframe created after the click, and neither
+`?autoplay=1` nor the IFrame Player API's `playVideo()` gets around it.
 
 ## What is not verified
 

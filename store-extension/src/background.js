@@ -5,6 +5,7 @@
  * locally, on every turn and for free. Searching happens only when you click.
  * Nothing about a message you ignore ever leaves the browser.
  */
+import { BUILD } from './build.js';
 import { extractTopic } from './generated/core/topic.js';
 import { rankShorts } from './generated/core/rank.js';
 import { searchShorts, QuotaExceededError, ApiKeyError, verifyKey } from './youtube.js';
@@ -173,13 +174,11 @@ async function getState() {
     getQuota(settings.dailySearches),
     cacheStats(),
   ]);
-  let build = 'dev';
-  try { ({ BUILD: build } = await import('./build.js')); } catch { /* unpackaged */ }
   return {
     ok: true, offer, quota, cache,
     hasKey: !!settings.apiKey,
     playerBase: settings.playerBase,
-    build,
+    build: BUILD,
   };
 }
 

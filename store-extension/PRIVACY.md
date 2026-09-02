@@ -77,9 +77,15 @@ YouTube Data API containing your search phrase and your API key. Your IP address
 is visible to Google, as with any web request. This is governed by
 [Google's Privacy Policy](https://policies.google.com/privacy).
 
-When you press play, the video is embedded from `youtube-nocookie.com`. Nothing
-loads from YouTube until you press play — before that, a card is only a
-thumbnail.
+When results are shown, the player for the clip on screen is embedded from
+`youtube-nocookie.com`, as on any page with an embedded video. **It does not
+play until you press YouTube's play button.** The other results in the row stay
+thumbnails until you select them.
+
+Earlier versions loaded nothing from YouTube until you pressed play, but that
+cost two clicks to start a video, because a browser will not let a frame created
+after your click inherit it. Clearing the player page in settings restores the
+old behaviour: nothing is embedded, and clips open in a separate window.
 
 **The player page.** To play a clip inside the panel, Tangent frames a small
 page hosted on GitHub Pages whose only job is to embed the official YouTube

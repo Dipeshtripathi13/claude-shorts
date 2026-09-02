@@ -27,11 +27,9 @@
  *    fails with "Video player configuration error (153)". Framing this page
  *    instead gives YouTube a real https origin.
  *
- * 2. A plain ?autoplay=1 does not start the video, because user activation does
- *    not propagate into a cross-origin iframe created after the click. The
- *    IFrame Player API does: playVideo() on the ready event starts playback
- *    using the autoplay permission delegated down the frame chain, so the
- *    viewer's single click on the thumbnail is enough.
+ * 2. Nothing autoplays. The extension loads this page alongside the result, so
+ *    the viewer's one click is YouTube's own play button. Autoplaying here
+ *    would start a video nobody asked for.
  *
  * Deliberately trivial otherwise: no tracking, no analytics, and no logic that
  * belongs in the extension.
@@ -48,43 +46,17 @@
     return;
   }
 
-  /** If the API cannot load, a plain embed still plays on one further click. */
-  function fallback() {
-    if (window.__tangentPlayerStarted) return;
-    window.__tangentPlayerStarted = true;
-    var f = document.createElement('iframe');
-    f.src = 'https://www.youtube-nocookie.com/embed/' + id +
-            '?autoplay=1&rel=0&modestbranding=1&playsinline=1';
-    f.title = 'YouTube video player';
-    f.setAttribute('allow', 'autoplay; encrypted-media; picture-in-picture; web-share');
-    f.setAttribute('allowfullscreen', '');
-    var host = document.getElementById('player');
-    host.parentNode.replaceChild(f, host);
-  }
-
-  window.onYouTubeIframeAPIReady = function () {
-    if (window.__tangentPlayerStarted) return;
-    window.__tangentPlayerStarted = true;
-    new YT.Player('player', {
-      videoId: id,
-      host: 'https://www.youtube-nocookie.com',
-      playerVars: { autoplay: 1, rel: 0, modestbranding: 1, playsinline: 1 },
-      events: {
-        onReady: function (e) {
-          // Explicit play: the surest way to start without activation here.
-          try { e.target.playVideo(); } catch (err) { /* user can press play */ }
-        },
-      },
-    });
-  };
-
-  var api = document.createElement('script');
-  api.src = 'https://www.youtube.com/iframe_api';
-  api.onerror = fallback;
-  document.head.appendChild(api);
-
-  // If the API has not initialised in a few seconds, embed directly instead.
-  setTimeout(fallback, 4000);
+  var f = document.createElement('iframe');
+  // No autoplay: this page is now loaded together with the result, so starting
+  // playback here would mean a video began without the viewer asking. YouTube's
+  // own play button is the single, deliberate click.
+  f.src = 'https://www.youtube-nocookie.com/embed/' + id +
+          '?rel=0&modestbranding=1&playsinline=1';
+  f.title = 'YouTube video player';
+  f.setAttribute('allow', 'autoplay; encrypted-media; picture-in-picture; web-share');
+  f.setAttribute('allowfullscreen', '');
+  var host = document.getElementById('player');
+  host.parentNode.replaceChild(f, host);
 })();
 </script>
 </body>
