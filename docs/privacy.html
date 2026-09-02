@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tangent — Privacy policy</title>
+<meta name="description" content="What the Tangent browser extension reads, what it sends, and what it stores.">
+<style>
+  :root {
+    color-scheme: light dark;
+    --bg: #fbfaf9; --surface: #fff; --ink: #1b1a18; --muted: #6b6862;
+    --line: #e6e2dc; --accent: #b4531f;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #17161a; --surface: #201f24; --ink: #eceaf0; --muted: #9a96a3;
+      --line: #322f38; --accent: #e0764a;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font: 16px/1.65 ui-sans-serif, -apple-system, "Segoe UI", system-ui, sans-serif;
+  }
+  main { max-width: 40rem; margin: 0 auto; padding: 56px 24px 80px; }
+  h1 { font-size: 26px; letter-spacing: -0.02em; margin: 0 0 6px; }
+  .meta { color: var(--muted); font-size: 14px; margin: 0 0 32px; }
+  h2 { font-size: 17px; margin: 36px 0 10px; letter-spacing: -0.01em; }
+  p, li { color: var(--ink); }
+  .lead { font-size: 17px; }
+  code {
+    background: color-mix(in srgb, var(--ink) 8%, transparent);
+    padding: 1px 5px; border-radius: 4px; font-size: 0.88em;
+  }
+  a { color: var(--accent); }
+  .scroll { overflow-x: auto; }
+  table { border-collapse: collapse; width: 100%; margin: 14px 0; font-size: 15px; }
+  th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--muted); font-weight: 600; font-size: 13px; }
+  .box {
+    background: var(--surface); border: 1px solid var(--line);
+    border-left: 3px solid var(--accent);
+    padding: 16px 18px; border-radius: 8px; margin: 20px 0;
+  }
+  .box p:last-child { margin-bottom: 0; }
+  ul { padding-left: 20px; }
+  footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--line); color: var(--muted); font-size: 14px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Privacy policy — Tangent</h1>
+  <p class="meta">Browser extension &middot; Last updated 2 September 2026 &middot;
+     Contact: <a href="mailto:killredps@gmail.com">killredps@gmail.com</a></p>
+
+  <p class="lead">Tangent is open source. Everything below can be verified by
+     reading <a href="https://github.com/Dipeshtripathi13/claude-shorts">the source</a>.</p>
+
+  <div class="box">
+    <p><strong>The short version.</strong> Tangent reads one thing: the message
+       you just typed into an AI chat. It works out a search phrase from it
+       <strong>on your own device</strong>.</p>
+    <p>Nothing is transmitted anywhere until you click <em>Find explainers</em>.
+       When you do, a phrase such as <code>database migration postgres
+       explained</code> goes to the YouTube Data API using <strong>your own</strong>
+       API key. Your message is never transmitted.</p>
+    <p>There is no Tangent server. No analytics, no tracking, no advertising,
+       no accounts.</p>
+  </div>
+
+  <h2>What is collected</h2>
+  <div class="scroll">
+  <table>
+    <thead><tr><th>Data</th><th>Where it goes</th><th>Why</th></tr></thead>
+    <tbody>
+      <tr><td>The message you just typed</td><td>Stays in your browser</td><td>To work out the topic</td></tr>
+      <tr><td>A short derived phrase</td><td>YouTube, <strong>only when you click</strong></td><td>To find videos on that topic</td></tr>
+      <tr><td>Your YouTube API key</td><td>Stays in your browser</td><td>To make that request as you</td></tr>
+      <tr><td>Search results</td><td>Stays in your browser</td><td>So a topic is not searched twice</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <p>Tangent does <strong>not</strong> collect or transmit your name, email,
+     location, browsing history, the assistant's replies, your conversation
+     history, your files, your credentials, or your activity on any other site.</p>
+
+  <h2>Where it runs</h2>
+  <p>Only on these AI chat sites, and nowhere else:</p>
+  <ul>
+    <li><code>claude.ai</code>, <code>chatgpt.com</code>, <code>chat.openai.com</code></li>
+    <li><code>gemini.google.com</code>, <code>aistudio.google.com</code></li>
+    <li><code>grok.com</code>, <code>chat.deepseek.com</code>, <code>chat.qwen.ai</code></li>
+    <li><code>kimi.com</code>, <code>kimi.moonshot.cn</code></li>
+    <li><code>perplexity.ai</code>, <code>chat.mistral.ai</code>, <code>copilot.microsoft.com</code></li>
+    <li><code>poe.com</code>, <code>meta.ai</code>, <code>huggingface.co/chat</code></li>
+  </ul>
+  <p>Any of them can be switched off individually in settings, and Tangent will
+     ignore it entirely.</p>
+
+  <h2>What is removed before anything is sent</h2>
+  <p>Before your message is used to build a search phrase, the following are
+     stripped out: code blocks, diffs, stack traces, file paths, filenames,
+     URLs, email addresses, IP addresses, hashes, base64 blobs and environment
+     variables.</p>
+  <p>If what remains contains anything shaped like a credential — an API key, an
+     access token, an AWS key, a JWT, a private key, or a <code>password:</code>
+     assignment — Tangent <strong>discards the message entirely</strong> and
+     offers nothing.</p>
+
+  <h2>What is stored, and for how long</h2>
+  <div class="scroll">
+  <table>
+    <thead><tr><th>Stored</th><th>Lifetime</th></tr></thead>
+    <tbody>
+      <tr><td>Your settings, including the API key</td><td>Until you change or remove them</td></tr>
+      <tr><td>Cached search results</td><td>7 days by default; never more than 30, as YouTube's developer policies require</td></tr>
+      <tr><td>Daily search counter</td><td>Resets each day</td></tr>
+      <tr><td>The pending suggestion, and clips already shown</td><td>Per tab; cleared when the tab or browser closes</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p>All of it uses the browser's own extension storage. Nothing is synced to
+     any server. Uninstalling removes every stored item.</p>
+
+  <h2>Third parties</h2>
+  <p><strong>YouTube / Google.</strong> When you click <em>Find explainers</em>, a
+     request goes to the YouTube Data API containing your search phrase and your
+     API key. Your IP address is visible to Google, as with any web request. This
+     is governed by <a href="https://policies.google.com/privacy">Google's Privacy Policy</a>.</p>
+
+  <p><strong>The player page.</strong> To play a clip inside the panel, Tangent
+     frames a small page hosted on GitHub Pages whose only job is to embed the
+     official YouTube player. YouTube refuses to play inside a browser extension
+     panel without an HTTP <code>Referer</code>, which Chrome does not send from
+     extension pages. That page contains no analytics and no logic, receives only
+     a video id, and its source is
+     <a href="https://github.com/Dipeshtripathi13/claude-shorts/blob/main/docs/player.html"><code>docs/player.html</code></a>.
+     You can point the extension at your own copy, or clear the field in settings
+     to disable inline playback entirely.</p>
+
+  <p><strong>Nobody else.</strong> Tangent runs no server of its own and sends
+     your data to no other party.</p>
+
+  <h2>Your choices</h2>
+  <ul>
+    <li><strong>Don't click.</strong> A suggestion you ignore transmits nothing.</li>
+    <li><strong>Switch off any site</strong> in settings.</li>
+    <li><strong>Hide the panel</strong> with the toolbar icon.</li>
+    <li><strong>Remove the API key</strong>, and nothing can be searched at all.</li>
+    <li><strong>Uninstall</strong>, which removes every stored item.</li>
+  </ul>
+
+  <h2>Children</h2>
+  <p>Tangent is not directed at children under 13 and knowingly collects no data
+     from anyone.</p>
+
+  <h2>Changes</h2>
+  <p>Material changes will be published in the repository and reflected in the
+     store listing before they take effect.</p>
+
+  <footer>
+    Tangent is an independent open-source project. It is not affiliated with,
+    endorsed by, or sponsored by Google, YouTube, Anthropic, or OpenAI.
+  </footer>
+</main>
+</body>
+</html>

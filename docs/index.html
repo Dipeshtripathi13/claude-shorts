@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tangent — explainers for AI chats</title>
+<meta name="description" content="A browser extension that offers a short explainer video for whatever you just asked your AI assistant. Nothing is searched until you click.">
+<style>
+  :root {
+    color-scheme: light dark;
+    --bg: #fbfaf9; --surface: #fff; --ink: #1b1a18; --muted: #6b6862;
+    --line: #e6e2dc; --accent: #b4531f; --accent-ink: #fff;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #17161a; --surface: #201f24; --ink: #eceaf0; --muted: #9a96a3;
+      --line: #322f38; --accent: #e0764a; --accent-ink: #17161a;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font: 16px/1.65 ui-sans-serif, -apple-system, "Segoe UI", system-ui, sans-serif;
+  }
+  main { max-width: 42rem; margin: 0 auto; padding: 72px 24px 80px; }
+  .mark {
+    width: 34px; height: 46px; border-radius: 7px; background: var(--accent);
+    display: grid; place-items: center; margin-bottom: 22px;
+  }
+  .mark span { color: var(--accent-ink); font-size: 15px; padding-left: 3px; }
+  h1 { font-size: clamp(30px, 6vw, 40px); letter-spacing: -0.025em; margin: 0 0 12px; line-height: 1.1; }
+  .lead { font-size: 19px; color: var(--ink); margin: 0 0 10px; max-width: 32ch; }
+  .sub { color: var(--muted); margin: 0 0 34px; }
+  h2 { font-size: 17px; margin: 40px 0 10px; letter-spacing: -0.01em; }
+  p { color: var(--ink); }
+  .muted { color: var(--muted); }
+  code {
+    background: color-mix(in srgb, var(--ink) 8%, transparent);
+    padding: 1px 5px; border-radius: 4px; font-size: 0.88em;
+  }
+  a { color: var(--accent); }
+  .demo {
+    background: var(--surface); border: 1px solid var(--line); border-radius: 10px;
+    padding: 20px; margin: 26px 0; font-size: 15px;
+  }
+  .demo .q { color: var(--muted); margin: 0 0 12px; }
+  .btn {
+    display: inline-block; background: var(--accent); color: var(--accent-ink);
+    border-radius: 8px; padding: 8px 16px; font-weight: 600; font-size: 15px;
+  }
+  .demo .note { color: var(--muted); font-size: 13px; margin: 12px 0 0; }
+  ul { padding-left: 20px; }
+  li { margin-bottom: 6px; }
+  .links { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 12px; }
+  footer { margin-top: 52px; padding-top: 20px; border-top: 1px solid var(--line); color: var(--muted); font-size: 14px; }
+</style>
+</head>
+<body>
+<main>
+  <div class="mark" aria-hidden="true"><span>&#9654;</span></div>
+
+  <h1>Tangent</h1>
+  <p class="lead">A short explainer video for whatever you just asked your AI
+     assistant.</p>
+  <p class="sub">Browser extension for Chrome and Brave. Open source, MIT.</p>
+
+  <div class="demo">
+    <p class="q">You ask Claude to plan a zero-downtime database migration&hellip;</p>
+    <p style="margin:0 0 4px"><strong>Find explainers: database migration</strong></p>
+    <span class="btn">Find explainers</span>
+    <p class="note">Uses one of today's searches. Ignore it and nothing happens.</p>
+  </div>
+
+  <h2>Why it is not a distraction</h2>
+  <ul>
+    <li><strong>Nothing plays unless you ask.</strong> A message raises a button,
+        not a video. Working out the topic happens on your own device and costs
+        nothing, so ignoring the button is free — and usual.</li>
+    <li><strong>It knows a question from a chore.</strong> “What is
+        photosynthesis” gets a button. “Rerun the tests”, “commit this”, “yes”
+        get nothing at all.</li>
+    <li><strong>No feed.</strong> A fixed set of results. No autoplay, no
+        recommendations, no “up next”.</li>
+  </ul>
+
+  <h2>Privacy</h2>
+  <p>Tangent reads only the message you just typed, and only on AI chat sites.
+     Before anything is searched, code, file paths, URLs and anything shaped like
+     an API key are stripped out — and a message that looks like it contains a
+     credential is discarded entirely.</p>
+  <p>What reaches YouTube is a short phrase like
+     <code>database migration postgres explained</code>, never your message. It
+     searches with your own free API key, so nothing is routed through anyone
+     else's server. There is no Tangent server, no analytics and no account.</p>
+  <p class="muted"><a href="privacy.html">Full privacy policy</a></p>
+
+  <h2>Where it works</h2>
+  <p>Claude, ChatGPT, Gemini, Grok, DeepSeek, Qwen, Kimi, Perplexity, Mistral,
+     Copilot, Poe, Meta AI and HuggingChat. Any of them can be switched off
+     individually.</p>
+
+  <h2>Get it</h2>
+  <div class="links">
+    <a href="https://github.com/Dipeshtripathi13/claude-shorts">Source on GitHub</a>
+    <a href="https://github.com/Dipeshtripathi13/claude-shorts/tree/main/store-extension">Build it yourself</a>
+    <a href="privacy.html">Privacy</a>
+  </div>
+
+  <footer>
+    Tangent is an independent open-source project. It is not affiliated with,
+    endorsed by, or sponsored by Google, YouTube, Anthropic, or OpenAI.
+  </footer>
+</main>
+</body>
+</html>
