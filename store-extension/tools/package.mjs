@@ -93,6 +93,14 @@ const staged = JSON.parse(readFileSync(join(STAGE, 'manifest.json'), 'utf8'));
 staged.version_name = `${manifest.version} build ${stamp}`;
 writeFileSync(join(STAGE, 'manifest.json'), JSON.stringify(staged, null, 2) + '\n');
 
+// Also emit it as a module. The browser can serve a cached manifest after an
+// unpacked reload, which makes version_name an unreliable answer to "which code
+// is running"; a module is loaded with the code itself, so it cannot disagree.
+writeFileSync(
+  join(STAGE, 'src', 'build.js'),
+  `/** Written by tools/package.mjs. */\nexport const BUILD = '${stamp}';\n`,
+);
+
 const zipName = `tangent-${manifest.version}.zip`;
 const zipPath = join(ROOT, 'dist', zipName);
 

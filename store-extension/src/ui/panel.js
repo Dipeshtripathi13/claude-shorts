@@ -259,16 +259,21 @@ document.addEventListener('keydown', (e) => {
 
 /* ------------------------------------------------------------------ boot */
 
-function showBuild() {
+async function showBuild(workerBuild) {
+  let panelBuild = 'dev';
   try {
-    const m = chrome.runtime.getManifest();
-    $('attribution').textContent = m.version_name ?? m.version;
-  } catch { /* cosmetic */ }
+    ({ BUILD: panelBuild } = await import('../build.js'));
+  } catch { /* running unpackaged */ }
+  // Showing both makes a half-updated extension obvious: the panel can reload
+  // with new code while the service worker is still running the old bundle.
+  $('attribution').textContent = workerBuild && workerBuild !== panelBuild
+    ? `panel ${panelBuild} / worker ${workerBuild} — MISMATCH`
+    : `build ${panelBuild}`;
 }
 
 async function init() {
-  showBuild();
   const state = await send({ type: 'get-state' });
+  void showBuild(state?.build);
   if (!state?.ok) { show('paneIdle'); return; }
 
   hasKey = state.hasKey;
