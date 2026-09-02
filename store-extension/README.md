@@ -31,10 +31,10 @@ improves both and there is no forked copy to drift.
 npm install
 npm run build      # compile the shared core, generate the icons
 npm test           # 12 self-tests; no API key, no network
-npm run package    # -> dist/tangent-1.0.0.zip and dist/unpacked/
+npm run package    # -> dist/tangent-1.0.0.zip and load-unpacked/
 ```
 
-Load `dist/unpacked` at `chrome://extensions` → Developer mode → Load unpacked.
+Load `load-unpacked` at `chrome://extensions` → Developer mode → Load unpacked.
 
 ## Layout
 

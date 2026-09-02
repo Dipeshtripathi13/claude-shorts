@@ -13,6 +13,7 @@ const PANES = ['paneSetup', 'paneIdle', 'paneOffer', 'paneLoading', 'paneResults
 
 let offer = null;
 let result = null;
+let hasKey = false;
 let index = 0;
 let playing = false;
 
@@ -29,13 +30,28 @@ function say(text) {
 function renderOffer(next) {
   offer = next;
   result = null;
+  say(`Spotted in your message · ${Math.round(next.topic.confidence * 100)}% confident`);
+
+  // Without a key we cannot search, but hiding what we found makes the
+  // extension look broken. Name the topic on the setup screen instead.
+  if (!hasKey) {
+    const el = $('setupTopic');
+    el.innerHTML = '';
+    el.append('Found in your message: ');
+    const strong = document.createElement('strong');
+    strong.textContent = next.topic.label;
+    el.append(strong, '. Add a key and this becomes a search.');
+    el.hidden = false;
+    show('paneSetup');
+    return;
+  }
+
   $('offerSubject').textContent = next.topic.label;
   $('offerQuery').textContent = `would search “${next.topic.query}”`;
   $('offerCost').textContent = next.cached
     ? 'Already saved from an earlier search — costs nothing.'
     : 'Uses one of today’s searches.';
   $('btnFind').disabled = false;
-  say(`Spotted in your message · ${Math.round(next.topic.confidence * 100)}% confident`);
   show('paneOffer');
 }
 
@@ -177,13 +193,16 @@ async function init() {
   const state = await send({ type: 'get-state' });
   if (!state?.ok) { show('paneIdle'); return; }
 
-  $('quota').textContent = state.hasKey
+  hasKey = state.hasKey;
+  $('quota').textContent = hasKey
     ? `${state.quota.remaining}/${state.quota.limit} searches left today`
     : 'No API key yet';
 
-  if (!state.hasKey) { show('paneSetup'); return; }
+  // An offer can arrive while this await is in flight; do not clobber it.
+  if (offer || result) return;
+
   if (state.offer) { renderOffer(state.offer); return; }
-  show('paneIdle');
+  show(hasKey ? 'paneIdle' : 'paneSetup');
 }
 
 function fmtDuration(s) {

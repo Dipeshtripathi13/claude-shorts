@@ -12,7 +12,7 @@ import { fileURLToPath } from 'node:url';
 import { execFileSync } from 'node:child_process';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
-const STAGE = join(ROOT, 'dist', 'unpacked');
+const STAGE = join(ROOT, 'load-unpacked');
 const INCLUDE = ['manifest.json', 'icons', 'src'];
 
 const manifest = JSON.parse(readFileSync(join(ROOT, 'manifest.json'), 'utf8'));
@@ -71,7 +71,9 @@ if (problems.length) {
 /* ------------------------------------------------------------- assemble */
 
 rmSync(join(ROOT, 'dist'), { recursive: true, force: true });
+rmSync(STAGE, { recursive: true, force: true });
 mkdirSync(STAGE, { recursive: true });
+mkdirSync(join(ROOT, 'dist'), { recursive: true });
 
 for (const entry of INCLUDE) {
   cpSync(join(ROOT, entry), join(STAGE, entry), { recursive: true });
@@ -91,5 +93,6 @@ try {
 
 const bytes = readFileSync(zipPath).length;
 console.log(`  ${zipName}  ${(bytes / 1024).toFixed(1)} KB`);
-console.log(`  unpacked build: dist/unpacked  (load this for local testing)`);
-console.log(`  upload:         dist/${zipName}`);
+console.log('');
+console.log('  Load unpacked  ->  ' + STAGE);
+console.log('  Upload to store->  ' + zipPath);

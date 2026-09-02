@@ -27,7 +27,7 @@ npm run package   # -> dist/tangent-1.0.0.zip
 ```
 
 Test it locally first: `chrome://extensions` → Developer mode → **Load unpacked**
-→ select `dist/unpacked`.
+→ select `load-unpacked`.
 
 ---
 
