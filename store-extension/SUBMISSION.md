@@ -44,18 +44,20 @@ Tangent — Explainers for AI Chats
 **Short description** (132 char limit)
 
 ```
-Offers a short explainer video for whatever you just asked your AI assistant. Nothing is searched until you click.
+Spots the concept in your AI chat message and finds YouTube Shorts that explain it. Nothing is searched until you click.
 ```
 
 **Detailed description**
 
 ```
-Tangent watches for the moment you ask an AI assistant something worth
-understanding, and offers you a short explainer video about it.
+Tangent notices when you ask an AI assistant about something worth
+understanding, and pulls up YouTube Shorts that explain it.
 
-Ask Claude to plan a database migration, and a button appears: "Find
-explainers: database migration." Click it and you get a handful of 30-90
-second videos on that exact topic. Ignore it and nothing happens.
+Ask Claude to plan a database migration, and a button appears in the side
+panel: "Find explainers: database migration." Click it and you get a handful
+of 15-90 second Shorts on that exact topic, ranked for brevity and relevance
+and playable right there beside the conversation. Ignore it and nothing
+happens at all.
 
 WHY IT IS NOT A DISTRACTION
 

@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Tangent \u2014 Explainers for AI Chats",
   "version": "1.0.0",
-  "description": "Offers a short explainer video for whatever you just asked your AI assistant. Nothing is searched until you click.",
+  "description": "Spots the concept in your AI chat message and finds YouTube Shorts that explain it. Nothing is searched until you click.",
   "icons": {
     "16": "icons/icon16.png",
     "32": "icons/icon32.png",
