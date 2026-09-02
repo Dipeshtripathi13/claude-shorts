@@ -59,6 +59,28 @@ That is what keeps the extension inside YouTube's 100-searches-per-day limit and
 what keeps it from being a distraction. `tools/selftest.mjs` asserts it directly
 — `fetchCalls.length === 0` after a message, `2` after an accept.
 
+## Why clips open in a window instead of playing inline
+
+YouTube requires an HTTP `Referer` header to identify who is embedding a player.
+Chrome sends none from a `chrome-extension://` page, so an inline embed fails
+with *Video player configuration error (153)*,
+`errorCode: embedder.identity.missing.referrer`. This began with Chrome 141 and
+affects every extension that embeds YouTube.
+
+Nothing in the extension's control fixes it:
+
+- `referrerpolicy` on the iframe does not apply to the extension origin
+- `declarativeNetRequest` cannot modify `Referer`
+- Signing in to YouTube only masks it, per session
+
+The only real fix is to proxy the embed through a page on an https domain, which
+would make the extension depend on a server it deliberately does not have. So a
+clip opens in a compact popup window instead: always works, no infrastructure,
+and it sits beside the conversation.
+
+If you later host a wrapper page, `playVideo()` in `src/ui/panel.js` is the one
+function to change.
+
 ## What is not verified
 
 The self-tests stub `fetch`, so the YouTube request shape is exercised but has

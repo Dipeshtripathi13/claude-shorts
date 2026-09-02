@@ -161,6 +161,7 @@ button.act:hover { border-color: var(--accent); color: var(--accent); }
 }
 .strip button[aria-current="true"] { border-color: var(--accent); }
 .strip img { width: 58px; height: 86px; object-fit: cover; }
+.playnote { color: var(--muted); font-size: 10.5px; margin: 10px 0 0; }
 
 /* --------------------------------------------------------------- spinner */
 

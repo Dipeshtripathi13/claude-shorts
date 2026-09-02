@@ -172,6 +172,9 @@ Being straight about these prevents one-star reviews:
   (which Brave does not reliably support).
 - **Reload an already-open chat tab** after installing — browsers do not inject
   content scripts into pages that were already loaded.
+- **Clips open in a small window, not inline.** YouTube requires a Referer
+  header that Chrome does not send from extension pages (error 153). Worth
+  stating in the listing so it does not read as a bug.
 
 ---
 

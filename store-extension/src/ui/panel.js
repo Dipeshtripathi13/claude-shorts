@@ -15,7 +15,6 @@ let offer = null;
 let result = null;
 let hasKey = false;
 let index = 0;
-let playing = false;
 
 function show(pane) {
   for (const p of PANES) $(p).hidden = p !== pane;
@@ -75,7 +74,6 @@ function renderResults(next) {
   result = next;
   offer = null;
   index = 0;
-  playing = false;
   say(`Searched “${next.topic.query}” · ${next.cached ? 'from your saved results' : 'fresh'}`);
   paint();
   show('paneResults');
@@ -88,28 +86,21 @@ function paint() {
   const frame = $('frame');
   frame.textContent = '';
 
-  if (playing) {
-    const f = document.createElement('iframe');
-    f.src = `${v.embedUrl}&autoplay=1`;
-    f.allow = 'accelerometer; autoplay; encrypted-media; picture-in-picture; web-share';
-    f.allowFullscreen = true;
-    f.title = v.title;
-    frame.appendChild(f);
-  } else {
-    const img = document.createElement('img');
-    img.src = v.thumbnail;
-    img.alt = '';
-    img.loading = 'lazy';
-    img.referrerPolicy = 'no-referrer';
-    const btn = document.createElement('button');
-    btn.className = 'play';
-    btn.setAttribute('aria-label', `Play: ${v.title}`);
-    const glyph = document.createElement('span');
-    glyph.textContent = '▶';
-    btn.appendChild(glyph);
-    btn.addEventListener('click', () => { playing = true; paint(); });
-    frame.append(img, btn);
-  }
+  const img = document.createElement('img');
+  img.src = v.thumbnail;
+  img.alt = '';
+  img.loading = 'lazy';
+  img.referrerPolicy = 'no-referrer';
+
+  const btn = document.createElement('button');
+  btn.className = 'play';
+  btn.setAttribute('aria-label', `Play on YouTube: ${v.title}`);
+  const glyph = document.createElement('span');
+  glyph.textContent = '▶';
+  btn.appendChild(glyph);
+  btn.addEventListener('click', () => playVideo(v));
+
+  frame.append(img, btn);
 
   $('vtitle').textContent = v.title;
   $('vmeta').textContent = [v.channel, fmtDuration(v.durationSec), fmtViews(v.viewCount)]
@@ -127,15 +118,36 @@ function paint() {
     t.loading = 'lazy';
     t.referrerPolicy = 'no-referrer';
     b.appendChild(t);
-    b.addEventListener('click', () => { index = i; playing = false; paint(); });
+    b.addEventListener('click', () => { index = i; paint(); });
     strip.appendChild(b);
   });
+}
+
+/**
+ * Opens the clip in a small always-on-top window rather than embedding it.
+ *
+ * YouTube requires an HTTP Referer to identify the embedder, and Chrome sends
+ * none from a chrome-extension:// page, so an inline player fails with
+ * "Video player configuration error (153)". Nothing in the extension's control
+ * fixes that: referrerpolicy does not apply to the extension origin, and
+ * declarativeNetRequest cannot set Referer. The only true fix is proxying
+ * through a page on a real https domain, which would mean depending on a server
+ * this extension deliberately does not have.
+ *
+ * A compact popup keeps the clip beside the conversation and always works.
+ */
+function playVideo(v) {
+  const opts = { url: v.url, type: 'popup', width: 420, height: 760 };
+  if (chrome.windows?.create) {
+    chrome.windows.create(opts).catch(() => window.open(v.url, '_blank', 'noopener,width=420,height=760'));
+  } else {
+    window.open(v.url, '_blank', 'noopener,width=420,height=760');
+  }
 }
 
 function move(delta) {
   if (!result) return;
   index = (index + delta + result.videos.length) % result.videos.length;
-  playing = false;
   paint();
 }
 
@@ -167,7 +179,7 @@ $('btnSkip').addEventListener('click', async () => {
 $('btnPrev').addEventListener('click', () => move(-1));
 $('btnNext').addEventListener('click', () => move(1));
 $('btnOpen').addEventListener('click', () => {
-  if (result) window.open(result.videos[index].url, '_blank', 'noopener');
+  if (result) playVideo(result.videos[index]);
 });
 $('btnBack').addEventListener('click', () => show(offer ? 'paneOffer' : 'paneIdle'));
 $('btnSettings').addEventListener('click', () => chrome.runtime.openOptionsPage());
@@ -183,8 +195,7 @@ document.addEventListener('keydown', (e) => {
   if ($('paneResults').hidden) return;
   if (e.key === 'j' || e.key === 'ArrowDown') { move(1); e.preventDefault(); }
   else if (e.key === 'k' || e.key === 'ArrowUp') { move(-1); e.preventDefault(); }
-  else if (e.key === 'Enter') { playing = true; paint(); }
-  else if (e.key === 'o') { $('btnOpen').click(); }
+  else if (e.key === 'Enter' || e.key === 'o') { $('btnOpen').click(); }
 });
 
 /* ------------------------------------------------------------------ boot */
