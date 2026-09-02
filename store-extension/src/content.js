@@ -16,6 +16,10 @@
 (function () {
   'use strict';
 
+  // Take over cleanly from any previous instance in this page.
+  document.getElementById('tangent-panel-host')?.remove();
+  document.getElementById('tangent-push-style')?.remove();
+
   const MIN_CHARS = 12;
   const PANEL_ID = 'tangent-panel-host';
   const STYLE_ID = 'tangent-push-style';
@@ -91,7 +95,15 @@
   /* ------------------------------------------------------------- panel */
 
   function ensurePanel() {
-    if (host && document.body.contains(host)) return host;
+    // isConnected rather than a containment check against a specific parent:
+    // the panel hangs off <html>, and asking whether <body> contained it was
+    // always false, so every toggle built another panel on top of the last.
+    if (host?.isConnected) return host;
+
+    // A panel may also be left in the page by an earlier instance of this
+    // script - orphaned by an extension reload, or injected twice. Only one
+    // may exist, and it must be the one this instance can actually control.
+    for (const stale of document.querySelectorAll(`#${PANEL_ID}`)) stale.remove();
 
     host = document.createElement('div');
     host.id = PANEL_ID;
