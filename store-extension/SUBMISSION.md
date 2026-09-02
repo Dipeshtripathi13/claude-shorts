@@ -105,7 +105,7 @@ individually switchable in settings.
 
 **Homepage URL:** `https://dipeshtripathi13.github.io/claude-shorts/`
 **Privacy policy URL:** `https://dipeshtripathi13.github.io/claude-shorts/privacy.html`
-**Support email:** killredps@gmail.com
+**Support email:** tripathidipesh13@gmail.com
 
 **Category:** Productivity
 **Language:** English

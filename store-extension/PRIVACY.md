@@ -1,7 +1,7 @@
 # Privacy policy — Tangent
 
 **Last updated:** 1 September 2026
-**Contact:** killredps@gmail.com
+**Contact:** tripathidipesh13@gmail.com
 
 Tangent is an open-source browser extension. Its full source is at
 <https://github.com/Dipeshtripathi13/claude-shorts>, and everything below can be
