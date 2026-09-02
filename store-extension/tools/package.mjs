@@ -63,22 +63,38 @@ for (const page of listHtml(join(ROOT, 'src'))) {
   }
 }
 
-// The site list is repeated in three manifest fields. They must stay identical:
-// a site in content_scripts but missing from host_permissions injects a script
-// that cannot message the worker, and one missing from web_accessible_resources
-// injects a panel that will not load. Both fail silently on that site alone.
+// The site list is repeated in three manifest fields. They must cover the same
+// origins: a site in content_scripts but missing from host_permissions injects
+// a script that cannot message the worker, and one missing from
+// web_accessible_resources injects a panel that will not load. Both fail
+// silently, and only on that site.
+//
+// Compared by origin, because the fields do not accept the same shapes:
+// web_accessible_resources match patterns may not carry a path at all, which
+// Chrome rejects at load time with "Invalid match pattern".
 {
-  const sites = (manifest.content_scripts ?? []).flatMap((c) => c.additionalProperties ?? c.matches ?? []);
+  const origin = (pattern) => pattern.replace(/^(\*|https?):\/\/([^/]+)\/.*$/, '$2');
+  const set = (list) => [...new Set(list.map(origin))];
+
+  const sites = set((manifest.content_scripts ?? []).flatMap((c) => c.matches ?? []));
   const war = (manifest.web_accessible_resources ?? []).flatMap((r) => r.matches ?? []);
-  const hosts = (manifest.host_permissions ?? []).filter((h) => !h.includes('googleapis.com'));
+  const hosts = set((manifest.host_permissions ?? []).filter((h) => !h.includes('googleapis.com')));
   const diff = (a, b) => a.filter((x) => !b.includes(x));
 
   for (const [label, missing] of [
     ['host_permissions', diff(sites, hosts)],
-    ['web_accessible_resources', diff(sites, war)],
+    ['web_accessible_resources', diff(sites, set(war))],
     ['content_scripts (listed as a host but never injected)', diff(hosts, sites)],
   ]) {
     if (missing.length) problems.push(`${label} is missing: ${missing.join(', ')}`);
+  }
+
+  // Chrome refuses to load the extension at all if this is wrong, so catch it
+  // here rather than in the browser's error dialog.
+  for (const pattern of war) {
+    if (!/^(\*|https?):\/\/[^/]+\/\*$/.test(pattern)) {
+      problems.push(`web_accessible_resources match pattern must be origin-level with a "/*" path: ${pattern}`);
+    }
   }
 }
 
