@@ -256,7 +256,15 @@ document.addEventListener('keydown', (e) => {
 
 /* ------------------------------------------------------------------ boot */
 
+function showBuild() {
+  try {
+    const m = chrome.runtime.getManifest();
+    $('attribution').textContent = m.version_name ?? m.version;
+  } catch { /* cosmetic */ }
+}
+
 async function init() {
+  showBuild();
   const state = await send({ type: 'get-state' });
   if (!state?.ok) { show('paneIdle'); return; }
 

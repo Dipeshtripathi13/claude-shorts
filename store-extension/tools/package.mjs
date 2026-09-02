@@ -6,7 +6,7 @@
  * TypeScript config stay out: reviewers read what you upload, and every extra
  * file is one more thing to explain.
  */
-import { readFileSync, existsSync, mkdirSync, rmSync, cpSync, readdirSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync, mkdirSync, rmSync, cpSync, readdirSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { execFileSync } from 'node:child_process';
@@ -79,6 +79,13 @@ for (const entry of INCLUDE) {
   cpSync(join(ROOT, entry), join(STAGE, entry), { recursive: true });
 }
 
+// A visible build stamp: without one, "did the reload take?" is unanswerable
+// from a screenshot, and stale-code confusion costs more than this line saves.
+const stamp = new Date().toISOString().replace(/[-:T]/g, '').slice(0, 12);
+const staged = JSON.parse(readFileSync(join(STAGE, 'manifest.json'), 'utf8'));
+staged.version_name = `${manifest.version} build ${stamp}`;
+writeFileSync(join(STAGE, 'manifest.json'), JSON.stringify(staged, null, 2) + '\n');
+
 const zipName = `tangent-${manifest.version}.zip`;
 const zipPath = join(ROOT, 'dist', zipName);
 
@@ -94,5 +101,6 @@ try {
 const bytes = readFileSync(zipPath).length;
 console.log(`  ${zipName}  ${(bytes / 1024).toFixed(1)} KB`);
 console.log('');
+console.log('  Build stamp    ->  ' + stamp);
 console.log('  Load unpacked  ->  ' + STAGE);
 console.log('  Upload to store->  ' + zipPath);
