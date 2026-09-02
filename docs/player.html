@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<title>Player</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #000; }
+  iframe { border: 0; width: 100%; height: 100%; display: block; }
+  p {
+    color: #bbb; font: 13px/1.5 system-ui, sans-serif;
+    text-align: center; padding: 24px;
+  }
+</style>
+</head>
+<body>
+<script>
+/*
+ * A playback shim, and nothing else.
+ *
+ * YouTube requires an HTTP Referer to identify who is embedding a player, and
+ * Chrome sends none from a chrome-extension:// page — an embed there fails with
+ * "Video player configuration error (153)". Framing this page instead gives
+ * YouTube a real https origin to see, so the player works.
+ *
+ * Deliberately trivial: it takes a video id and renders the official embed. No
+ * tracking, no analytics, no logic that belongs in the extension.
+ */
+(function () {
+  var id = new URLSearchParams(location.search).get('v') || '';
+
+  // Only ever interpolate something that looks like a YouTube id.
+  if (!/^[A-Za-z0-9_-]{6,24}$/.test(id)) {
+    var p = document.createElement('p');
+    p.textContent = 'No valid video id given.';
+    document.body.appendChild(p);
+    return;
+  }
+
+  var params = new URLSearchParams({
+    autoplay: '1',
+    rel: '0',
+    modestbranding: '1',
+    playsinline: '1',
+  });
+
+  var f = document.createElement('iframe');
+  f.src = 'https://www.youtube-nocookie.com/embed/' + id + '?' + params.toString();
+  f.title = 'YouTube video player';
+  f.setAttribute('allow', 'accelerometer; autoplay; encrypted-media; picture-in-picture; web-share');
+  f.setAttribute('allowfullscreen', '');
+  document.body.appendChild(f);
+})();
+</script>
+</body>
+</html>

@@ -2,7 +2,7 @@ const $ = (id) => document.getElementById(id);
 
 const send = (msg) => chrome.runtime.sendMessage(msg).catch((e) => ({ ok: false, error: e?.message }));
 
-const FIELDS = ['minConfidence', 'count', 'maxDurationSec', 'regionCode', 'relevanceLanguage', 'safeSearch'];
+const FIELDS = ['minConfidence', 'count', 'maxDurationSec', 'regionCode', 'relevanceLanguage', 'safeSearch', 'playerBase'];
 
 function status(el, text, kind) {
   el.textContent = text;
@@ -21,6 +21,7 @@ async function load() {
   $('regionCode').value = s.regionCode;
   $('relevanceLanguage').value = s.relevanceLanguage;
   $('safeSearch').value = s.safeSearch;
+  $('playerBase').value = s.playerBase ?? '';
   $('limitLabel').textContent = String(s.dailySearches);
   paintConfidence();
 

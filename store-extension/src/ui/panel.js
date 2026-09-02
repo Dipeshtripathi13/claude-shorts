@@ -74,6 +74,7 @@ function renderResults(next) {
   result = next;
   offer = null;
   index = 0;
+  playing = false;
   say(`Searched “${next.topic.query}” · ${next.cached ? 'from your saved results' : 'fresh'}`);
   paint();
   show('paneResults');
@@ -92,15 +93,25 @@ function paint() {
   img.loading = 'lazy';
   img.referrerPolicy = 'no-referrer';
 
-  const btn = document.createElement('button');
-  btn.className = 'play';
-  btn.setAttribute('aria-label', `Play on YouTube: ${v.title}`);
-  const glyph = document.createElement('span');
-  glyph.textContent = '▶';
-  btn.appendChild(glyph);
-  btn.addEventListener('click', () => playVideo(v));
-
-  frame.append(img, btn);
+  if (playing && playerBase) {
+    const f = document.createElement('iframe');
+    f.src = `${playerBase}?v=${encodeURIComponent(v.id)}`;
+    f.allow = 'accelerometer; autoplay; encrypted-media; picture-in-picture; web-share';
+    f.allowFullscreen = true;
+    f.title = v.title;
+    frame.appendChild(f);
+  } else {
+    const btn = document.createElement('button');
+    btn.className = 'play';
+    btn.setAttribute('aria-label', `Play: ${v.title}`);
+    const glyph = document.createElement('span');
+    glyph.textContent = '▶';
+    btn.appendChild(glyph);
+    btn.addEventListener('click', () => {
+      if (playerBase) { playing = true; paint(); } else { playVideo(v); }
+    });
+    frame.append(img, btn);
+  }
 
   $('vtitle').textContent = v.title;
   $('vmeta').textContent = [v.channel, fmtDuration(v.durationSec), fmtViews(v.viewCount)]
@@ -118,7 +129,7 @@ function paint() {
     t.loading = 'lazy';
     t.referrerPolicy = 'no-referrer';
     b.appendChild(t);
-    b.addEventListener('click', () => { index = i; paint(); });
+    b.addEventListener('click', () => { index = i; playing = false; paint(); });
     strip.appendChild(b);
   });
 }
@@ -137,17 +148,32 @@ function paint() {
  * A compact popup keeps the clip beside the conversation and always works.
  */
 function playVideo(v) {
-  const opts = { url: v.url, type: 'popup', width: 420, height: 760 };
+  const width = 420;
+  const height = 760;
+  const left = Math.max(0, Math.round((screen.availWidth - width) / 2));
+  const top = Math.max(0, Math.round((screen.availHeight - height) / 2));
+
   if (chrome.windows?.create) {
-    chrome.windows.create(opts).catch(() => window.open(v.url, '_blank', 'noopener,width=420,height=760'));
-  } else {
-    window.open(v.url, '_blank', 'noopener,width=420,height=760');
+    chrome.windows
+      .create({ url: v.url, type: 'popup', width, height, left, top })
+      .catch(() => openFallback(v.url, width, height, left, top));
+    return;
   }
+  openFallback(v.url, width, height, left, top);
+}
+
+function openFallback(url, width, height, left, top) {
+  // "noopener" must not appear in the features string: browsers read that as a
+  // request for an ordinary tab and throw the geometry away, which is exactly
+  // how this ended up opening full-screen.
+  const w = window.open(url, '_blank', `popup=yes,width=${width},height=${height},left=${left},top=${top}`);
+  if (w) w.opener = null;
 }
 
 function move(delta) {
   if (!result) return;
   index = (index + delta + result.videos.length) % result.videos.length;
+  playing = false;
   paint();
 }
 
@@ -205,6 +231,8 @@ async function init() {
   if (!state?.ok) { show('paneIdle'); return; }
 
   hasKey = state.hasKey;
+  playerBase = state.playerBase ?? '';
+  $('playnote').hidden = !!playerBase;
   $('quota').textContent = hasKey
     ? `${state.quota.remaining}/${state.quota.limit} searches left today`
     : 'No API key yet';

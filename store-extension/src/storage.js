@@ -18,6 +18,14 @@ const SETTINGS_DEFAULTS = {
   /** Daily ceiling we impose on ourselves, under YouTube's 100. */
   dailySearches: 90,
   cacheTtlHours: 168,
+  /**
+   * An https page that frames the YouTube embed on the extension's behalf.
+   * Chrome sends no Referer from a chrome-extension:// page and YouTube refuses
+   * to play without one, so an inline embed here fails with error 153. Framing
+   * a real https page gives YouTube an origin it accepts.
+   * Empty means "do not play inline" — clips open in a window instead.
+   */
+  playerBase: 'https://dipeshtripathi13.github.io/claude-shorts/player.html',
   /** Sites the user has switched off. */
   disabledHosts: [],
 };

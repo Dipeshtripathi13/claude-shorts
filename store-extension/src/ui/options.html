@@ -69,6 +69,20 @@
   </section>
 
   <section>
+    <h2>Inline playback</h2>
+    <p>YouTube refuses to play inside a browser extension panel: it requires a
+       <code>Referer</code> header that Chrome does not send from extension
+       pages (the "error 153" you may have seen). Framing a small page on a
+       real website works around that.</p>
+    <label for="playerBase">Player page</label>
+    <input id="playerBase" type="text" style="width:100%">
+    <p class="note">Leave this empty to open clips in a separate window instead.
+       The page it points at does nothing but embed the official YouTube player;
+       its source is <code>docs/player.html</code> in the repository, and you can
+       host your own copy anywhere.</p>
+  </section>
+
+  <section>
     <h2>Stored data</h2>
     <p class="note">Saved search results live in this browser and are dropped
        after a week, and in any case within 30 days as YouTube requires.</p>

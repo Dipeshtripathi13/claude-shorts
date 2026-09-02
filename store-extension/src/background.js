@@ -173,7 +173,7 @@ async function getState() {
     getQuota(settings.dailySearches),
     cacheStats(),
   ]);
-  return { ok: true, offer, quota, cache, hasKey: !!settings.apiKey };
+  return { ok: true, offer, quota, cache, hasKey: !!settings.apiKey, playerBase: settings.playerBase };
 }
 
 /** Cache entries are only interchangeable when these settings match. */

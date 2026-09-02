@@ -81,8 +81,18 @@ When you press play, the video is embedded from `youtube-nocookie.com`. Nothing
 loads from YouTube until you press play — before that, a card is only a
 thumbnail.
 
-**Nobody else.** Tangent contacts no other server, including any of ours. There
-isn't one.
+**The player page.** To play a clip inside the panel, Tangent frames a small
+page hosted on GitHub Pages whose only job is to embed the official YouTube
+player. YouTube refuses to play inside a browser extension panel without an
+HTTP `Referer`, which Chrome does not send from extension pages; framing a page
+on a real website is the only way around it. That page contains no analytics and
+no logic, receives only a video id, and its source is `docs/player.html` in the
+repository. GitHub sees the request as it would any page view. You can point the
+extension at your own copy, or clear the field in settings to disable inline
+playback entirely and open clips in a separate window instead.
+
+**Nobody else.** Tangent runs no server of its own and sends your data to no
+other party.
 
 ## Your choices
 
