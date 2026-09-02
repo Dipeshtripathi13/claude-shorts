@@ -9,6 +9,41 @@ function status(el, text, kind) {
   el.className = `status${kind ? ' ' + kind : ''}`;
 }
 
+/**
+ * The site list comes from the manifest rather than a second copy here, so
+ * adding a site in one place cannot leave this screen out of date.
+ */
+function hostsFromManifest() {
+  const matches = (chrome.runtime.getManifest().content_scripts ?? [])
+    .flatMap((c) => c.matches ?? []);
+  const hosts = matches
+    .map((m) => { try { return new URL(m.replace('/*', '/')).host; } catch { return null; } })
+    .filter(Boolean);
+  return [...new Set(hosts)].sort();
+}
+
+function renderSites(disabled) {
+  const box = $('sites');
+  box.textContent = '';
+  for (const host of hostsFromManifest()) {
+    const label = document.createElement('label');
+    const cb = document.createElement('input');
+    cb.type = 'checkbox';
+    cb.checked = !disabled.includes(host);
+    cb.dataset.host = host;
+    cb.addEventListener('change', saveSites);
+    label.append(cb, document.createTextNode(host));
+    box.appendChild(label);
+  }
+}
+
+async function saveSites() {
+  const disabledHosts = [...$('sites').querySelectorAll('input')]
+    .filter((cb) => !cb.checked)
+    .map((cb) => cb.dataset.host);
+  await send({ type: 'save-settings', patch: { disabledHosts } });
+}
+
 async function load() {
   const res = await send({ type: 'settings' });
   if (!res?.ok) return;
@@ -23,6 +58,7 @@ async function load() {
   $('safeSearch').value = s.safeSearch;
   $('playerBase').value = s.playerBase ?? '';
   $('limitLabel').textContent = String(s.dailySearches);
+  renderSites(s.disabledHosts ?? []);
   paintConfidence();
 
   if (s.apiKey) status($('keyStatus'), 'A key is saved.', 'ok');

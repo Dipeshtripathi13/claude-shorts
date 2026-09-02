@@ -39,7 +39,7 @@ Load `load-unpacked` at `chrome://extensions` → Developer mode → Load unpack
 ## Layout
 
 ```
-manifest.json          MV3, four host permissions, no remote code
+manifest.json          MV3, AI-chat hosts plus googleapis, no remote code
 src/background.js      service worker: extracts topics, and only searches on a click
 src/content.js         reads the composer, hosts the panel iframe
 src/youtube.js         YouTube Data API v3 over fetch

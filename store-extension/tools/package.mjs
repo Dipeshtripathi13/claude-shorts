@@ -63,6 +63,25 @@ for (const page of listHtml(join(ROOT, 'src'))) {
   }
 }
 
+// The site list is repeated in three manifest fields. They must stay identical:
+// a site in content_scripts but missing from host_permissions injects a script
+// that cannot message the worker, and one missing from web_accessible_resources
+// injects a panel that will not load. Both fail silently on that site alone.
+{
+  const sites = (manifest.content_scripts ?? []).flatMap((c) => c.additionalProperties ?? c.matches ?? []);
+  const war = (manifest.web_accessible_resources ?? []).flatMap((r) => r.matches ?? []);
+  const hosts = (manifest.host_permissions ?? []).filter((h) => !h.includes('googleapis.com'));
+  const diff = (a, b) => a.filter((x) => !b.includes(x));
+
+  for (const [label, missing] of [
+    ['host_permissions', diff(sites, hosts)],
+    ['web_accessible_resources', diff(sites, war)],
+    ['content_scripts (listed as a host but never injected)', diff(hosts, sites)],
+  ]) {
+    if (missing.length) problems.push(`${label} is missing: ${missing.join(', ')}`);
+  }
+}
+
 // A ReferenceError only appears at runtime, so check before packaging rather
 // than after a user reports a blank panel.
 const lint = spawnSync(process.execPath, [join(ROOT, 'tools', 'lint.mjs')], { cwd: ROOT, encoding: 'utf8' });

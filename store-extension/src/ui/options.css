@@ -91,6 +91,19 @@ button.primary {
 button:hover { filter: brightness(1.05); }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
+.sites {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
+  gap: 2px 14px;
+  margin-top: 10px;
+}
+.sites label {
+  display: flex; align-items: center; gap: 7px;
+  margin: 0; font-weight: 400; font-size: 13px;
+  padding: 3px 0; cursor: pointer;
+}
+.sites input { accent-color: var(--accent); }
+
 .note { color: var(--muted); font-size: 12.5px; }
 .status { font-size: 12.5px; min-height: 1.2em; margin-top: 8px; }
 .status.ok { color: var(--ok); }

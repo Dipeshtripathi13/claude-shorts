@@ -35,13 +35,17 @@ credentials, or your activity on any other website.
 
 ## Where Tangent runs
 
-Content scripts run only on:
+Content scripts run only on these AI chat sites:
 
-- `https://claude.ai/*`
-- `https://chatgpt.com/*`
-- `https://chat.openai.com/*`
+- `claude.ai` · `chatgpt.com` · `chat.openai.com`
+- `gemini.google.com` · `aistudio.google.com`
+- `grok.com` · `chat.deepseek.com` · `chat.qwen.ai`
+- `kimi.com` · `kimi.moonshot.cn`
+- `perplexity.ai` · `chat.mistral.ai` · `copilot.microsoft.com`
+- `poe.com` · `meta.ai` · `huggingface.co/chat`
 
-On every other site, Tangent does nothing at all.
+On every other site, Tangent does nothing at all. You can switch off any
+individual site in settings, and Tangent will ignore it entirely.
 
 ## What is removed before anything is sent
 

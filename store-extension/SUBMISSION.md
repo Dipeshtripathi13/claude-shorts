@@ -69,8 +69,10 @@ no "up next". Nothing ever plays until you press play.
 
 PRIVACY
 
-Tangent reads only the message you just typed, and only on claude.ai,
-chatgpt.com and chat.openai.com.
+Tangent reads only the message you just typed, and only on AI chat sites:
+Claude, ChatGPT, Gemini, Grok, DeepSeek, Qwen, Kimi, Perplexity, Mistral,
+Copilot, Poe, Meta AI and HuggingChat. Any of them can be switched off
+individually in settings.
 
 Before anything is searched, code, file paths, URLs, email addresses and
 anything shaped like an API key or password is stripped out. If a message
@@ -92,6 +94,11 @@ https://github.com/Dipeshtripathi13/claude-shorts
 Not affiliated with Google, YouTube, Anthropic or OpenAI.
 ```
 
+**Note on the host list.** Sixteen chat sites means a broader install warning
+than three did. Expect a reviewer to ask why; the answer is that they are all
+the same single purpose, the list contains only AI chat assistants, and each is
+individually switchable in settings.
+
 **Category:** Productivity
 **Language:** English
 
@@ -106,7 +113,7 @@ behaviour, so keep them accurate.
 |---|---|
 | `storage` | Stores the user's own YouTube API key, their preferences, and a short-lived cache of search results so the same topic is not searched twice. All local; nothing is synced or transmitted. |
 | `host_permissions: googleapis.com` | The extension calls the YouTube Data API directly with the user's own API key to find videos. This is the only outbound request the extension makes. |
-| `host_permissions` + content scripts on `claude.ai`, `chatgpt.com`, `chat.openai.com` | The extension reads the message the user just typed into the chat box on these three sites in order to determine the topic, and injects its own panel to display suggestions. It does not read the conversation, the assistant's replies, or history. |
+| `host_permissions` + content scripts on the AI chat sites | The extension reads the message the user just typed into the chat box on these sites in order to determine the topic, and injects its own panel to display suggestions. It does not read the conversation, the assistant's replies, or history. Each site can be switched off individually in settings. The list is limited to AI chat assistants, which is the extension's single purpose: claude.ai, chatgpt.com, chat.openai.com, gemini.google.com, aistudio.google.com, grok.com, chat.deepseek.com, chat.qwen.ai, kimi.com, kimi.moonshot.cn, perplexity.ai, chat.mistral.ai, copilot.microsoft.com, poe.com, meta.ai, and huggingface.co/chat. |
 | Remote code | None. All executable code ships in the package. The only external resources are YouTube video embeds and thumbnail images, loaded only after the user presses play. |
 
 **Single purpose statement**
