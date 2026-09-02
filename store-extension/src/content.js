@@ -18,6 +18,8 @@
 
   const MIN_CHARS = 12;
   const PANEL_ID = 'tangent-panel-host';
+  const STYLE_ID = 'tangent-push-style';
+  const PANEL_W = 340;
 
   let lastSent = '';
   let lastSentAt = 0;
@@ -113,21 +115,51 @@
     Object.assign(frame.style, { width: '100%', height: '100%', border: '0', display: 'block' });
 
     host.appendChild(frame);
-    document.body.appendChild(host);
+    // Attached to <html>, not <body>: the push below makes <body> a containing
+    // block for its fixed children, which would otherwise drag the panel along
+    // with the page it is meant to sit beside.
+    document.documentElement.appendChild(host);
     return host;
   }
 
-  function setVisible(next) {
+  /**
+   * Narrow the page so the panel sits beside the conversation.
+   *
+   * A margin on <html> is not enough. Most chat UIs lay their header, sidebar
+   * and composer out with `position: fixed`, which is positioned against the
+   * viewport and so ignores any margin an ancestor takes on — that is exactly
+   * why Claude and Grok moved over while ChatGPT and Gemini did not.
+   *
+   * Giving <body> a transform makes it the containing block for its own fixed
+   * descendants, so narrowing it narrows them too.
+   */
+  function applyPush(on) {
+    let style = document.getElementById(STYLE_ID);
+    if (!style) {
+      style = document.createElement('style');
+      style.id = STYLE_ID;
+      (document.head ?? document.documentElement).appendChild(style);
+    }
+    style.textContent = on
+      ? `html { overflow-x: hidden !important; }
+         body {
+           width: calc(100% - ${PANEL_W}px) !important;
+           max-width: calc(100% - ${PANEL_W}px) !important;
+           transform: translateX(0) !important;
+           transition: width .15s ease !important;
+         }`
+      : '';
+  }
+
+  function setVisible(next, pushPage = true) {
     visible = next;
     ensurePanel().style.display = next ? 'block' : 'none';
-    // Nudge the page over so the panel does not cover the conversation.
-    document.documentElement.style.transition = 'margin-right .15s ease';
-    document.documentElement.style.marginRight = next ? '340px' : '';
+    applyPush(next && pushPage);
   }
 
   chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
     if (msg?.type === 'toggle-panel') {
-      setVisible(!visible);
+      setVisible(!visible, msg.pushPage !== false);
       sendResponse({ ok: true, visible });
       return false;
     }
@@ -148,7 +180,5 @@
     setVisible(false);
   });
 
-  window.addEventListener('pagehide', () => {
-    document.documentElement.style.marginRight = '';
-  });
+  window.addEventListener('pagehide', () => applyPush(false));
 })();

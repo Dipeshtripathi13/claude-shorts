@@ -26,6 +26,11 @@ const SETTINGS_DEFAULTS = {
    * Empty means "do not play inline" — clips open in a window instead.
    */
   playerBase: 'https://dipeshtripathi13.github.io/claude-shorts/player.html',
+  /**
+   * Narrow the page so the panel sits beside the conversation rather than over
+   * it. Turn off if a site's layout reacts badly.
+   */
+  pushPage: true,
   /** Sites the user has switched off. */
   disabledHosts: [],
 };

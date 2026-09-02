@@ -59,6 +59,7 @@ async function load() {
   $('playerBase').value = s.playerBase ?? '';
   $('limitLabel').textContent = String(s.dailySearches);
   renderSites(s.disabledHosts ?? []);
+  $('pushPage').checked = s.pushPage !== false;
   paintConfidence();
 
   if (s.apiKey) status($('keyStatus'), 'A key is saved.', 'ok');
@@ -84,6 +85,10 @@ $('btnReveal').addEventListener('click', () => {
   const hidden = el.type === 'password';
   el.type = hidden ? 'text' : 'password';
   $('btnReveal').textContent = hidden ? 'Hide' : 'Show';
+});
+
+$('pushPage').addEventListener('change', async () => {
+  await send({ type: 'save-settings', patch: { pushPage: $('pushPage').checked } });
 });
 
 $('btnSave').addEventListener('click', async () => {

@@ -29,10 +29,24 @@ chrome.runtime.onInstalled.addListener(async ({ reason }) => {
 // Clicking the toolbar icon shows or hides the in-page panel.
 chrome.action.onClicked.addListener(async (tab) => {
   if (!tab?.id) return;
+  const settings = await getSettings();
+  const message = { type: 'toggle-panel', pushPage: settings.pushPage };
+
   try {
-    await chrome.tabs.sendMessage(tab.id, { type: 'toggle-panel' });
+    await chrome.tabs.sendMessage(tab.id, message);
+    return;
   } catch {
-    // No content script here (wrong site, or the tab predates the install).
+    // No content script in this tab. Nearly always because the tab was open
+    // before the extension was installed or reloaded, which is the normal case
+    // right after setup. Inject it rather than sending the user to a help page
+    // and making them work out that they needed to reload.
+  }
+
+  try {
+    await chrome.scripting.executeScript({ target: { tabId: tab.id }, files: ['src/content.js'] });
+    await chrome.tabs.sendMessage(tab.id, message);
+  } catch {
+    // Injection is only refused on a site we do not run on at all.
     await chrome.tabs.create({ url: chrome.runtime.getURL('src/ui/welcome.html') });
   }
 });

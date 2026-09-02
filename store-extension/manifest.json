@@ -24,7 +24,8 @@
   },
   "options_page": "src/ui/options.html",
   "permissions": [
-    "storage"
+    "storage",
+    "scripting"
   ],
   "host_permissions": [
     "https://www.googleapis.com/*",

@@ -111,6 +111,7 @@ behaviour, so keep them accurate.
 
 | Item | Justification |
 |---|---|
+| `scripting` | Injects the content script into a chat tab that was already open when the extension was installed or reloaded, so the toolbar button works without the user having to reload the page. Only ever into the declared chat sites. |
 | `storage` | Stores the user's own YouTube API key, their preferences, and a short-lived cache of search results so the same topic is not searched twice. All local; nothing is synced or transmitted. |
 | `host_permissions: googleapis.com` | The extension calls the YouTube Data API directly with the user's own API key to find videos. This is the only outbound request the extension makes. |
 | `host_permissions` + content scripts on the AI chat sites | The extension reads the message the user just typed into the chat box on these sites in order to determine the topic, and injects its own panel to display suggestions. It does not read the conversation, the assistant's replies, or history. Each site can be switched off individually in settings. The list is limited to AI chat assistants, which is the extension's single purpose: claude.ai, chatgpt.com, chat.openai.com, gemini.google.com, aistudio.google.com, grok.com, chat.deepseek.com, chat.qwen.ai, kimi.com, kimi.moonshot.cn, perplexity.ai, chat.mistral.ai, copilot.microsoft.com, poe.com, meta.ai, and huggingface.co/chat. |
@@ -177,8 +178,8 @@ Being straight about these prevents one-star reviews:
 - **Brave** installs this from the Chrome Web Store and it works, because the
   panel is injected into the page rather than using Chrome's side panel API
   (which Brave does not reliably support).
-- **Reload an already-open chat tab** after installing — browsers do not inject
-  content scripts into pages that were already loaded.
+- **No need to reload an already-open chat tab** — clicking the toolbar button
+  injects the content script if the tab predates the install.
 - **Clips play inline via a small hosted page.** YouTube requires a Referer
   header that Chrome does not send from extension pages (error 153), so the
   panel frames a page on GitHub Pages that does nothing but embed the official
