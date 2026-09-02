@@ -149,31 +149,49 @@ function nextPacificMidnight(now = new Date()) {
 /* ------------------------------------------------- current offer (session) */
 
 /**
- * The pending offer lives in session storage: it is meaningful only for the
- * current browsing session, and it must survive the service worker being
- * suspended between the user's message and their click.
+ * Per-tab, not global.
+ *
+ * A single shared offer meant a search run in one chat appeared in the panel of
+ * every other one: ask Gemini about the solar system, open the panel on
+ * ChatGPT, and there it was again. Each tab is its own conversation and gets
+ * its own state, which is also cleared when the tab closes.
+ *
+ * Session storage rather than local: this is meaningful only for the current
+ * browsing session, but it must survive the service worker being suspended
+ * between a message and the click that acts on it.
  */
-export async function setOffer(offer) {
-  await chrome.storage.session.set({ offer });
+const offerKey = (tabId) => `offer:${tabId}`;
+const seenKey = (tabId) => `seen:${tabId}`;
+
+export async function setOffer(tabId, offer) {
+  await chrome.storage.session.set({ [offerKey(tabId)]: offer });
 }
 
-export async function getOffer() {
-  const { offer } = await chrome.storage.session.get('offer');
-  return offer ?? null;
+export async function getOffer(tabId) {
+  const key = offerKey(tabId);
+  const store = await chrome.storage.session.get(key);
+  return store[key] ?? null;
 }
 
-export async function clearOffer() {
-  await chrome.storage.session.remove('offer');
+export async function clearOffer(tabId) {
+  await chrome.storage.session.remove(offerKey(tabId));
 }
 
-/** Video ids already shown, so a session never repeats a clip. */
-export async function markSeen(ids) {
-  const { seen = [] } = await chrome.storage.session.get('seen');
-  const next = [...new Set([...seen, ...ids])].slice(-300);
-  await chrome.storage.session.set({ seen: next });
+/** Video ids already shown in this tab, so one conversation never repeats a clip. */
+export async function markSeen(tabId, ids) {
+  const key = seenKey(tabId);
+  const store = await chrome.storage.session.get(key);
+  const next = [...new Set([...(store[key] ?? []), ...ids])].slice(-300);
+  await chrome.storage.session.set({ [key]: next });
 }
 
-export async function getSeen() {
-  const { seen = [] } = await chrome.storage.session.get('seen');
-  return new Set(seen);
+export async function getSeen(tabId) {
+  const key = seenKey(tabId);
+  const store = await chrome.storage.session.get(key);
+  return new Set(store[key] ?? []);
+}
+
+/** Drop everything belonging to a tab that has gone away. */
+export async function forgetTab(tabId) {
+  await chrome.storage.session.remove([offerKey(tabId), seenKey(tabId)]);
 }

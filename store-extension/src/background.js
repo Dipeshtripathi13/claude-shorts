@@ -13,7 +13,7 @@ import {
   getSettings, saveSettings, settingsDefaults,
   cacheGet, cacheSet, clearCache, cacheStats,
   getQuota, spendQuota, markQuotaExhausted,
-  setOffer, getOffer, clearOffer, markSeen, getSeen,
+  setOffer, getOffer, clearOffer, markSeen, getSeen, forgetTab,
 } from './storage.js';
 
 /* ------------------------------------------------------------- lifecycle */
@@ -61,11 +61,15 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
 });
 
 async function handle(msg, sender) {
+  // Every panel and content script lives in a tab, and each tab is its own
+  // conversation. Without this the whole extension shares one state.
+  const tabId = sender?.tab?.id ?? 0;
+
   switch (msg?.type) {
-    case 'turn':      return onTurn(msg, sender);
-    case 'accept':    return onAccept();
-    case 'get-state': return getState();
-    case 'dismiss':   return onDismiss();
+    case 'turn':      return onTurn(msg, tabId);
+    case 'accept':    return onAccept(tabId);
+    case 'get-state': return getState(tabId);
+    case 'dismiss':   return onDismiss(tabId);
     case 'settings':  return { ok: true, settings: await getSettings(), defaults: settingsDefaults() };
     case 'save-settings': {
       const settings = await saveSettings(msg.patch ?? {});
@@ -86,17 +90,17 @@ async function handle(msg, sender) {
  * A new user message. Extract a topic locally; if it is worth offering, park it
  * and light up the toolbar badge. No network call happens here, ever.
  */
-async function onTurn(msg, sender) {
+async function onTurn(msg, tabId) {
   const settings = await getSettings();
 
-  const host = safeHost(sender?.tab?.url ?? msg.href);
+  const host = safeHost(msg.href);
   if (host && settings.disabledHosts.includes(host)) return { ok: true, offered: false, reason: 'disabled here' };
 
   const topic = extractTopic(msg.text ?? '');
   if (!topic || topic.confidence < settings.minConfidence) {
-    await clearOffer();
-    await badge('');
-    await broadcast({ type: 'no-offer', reason: topic ? 'below the confidence threshold' : 'no teachable topic' });
+    await clearOffer(tabId);
+    await badge('', tabId);
+    await broadcast({ type: 'no-offer', tabId, reason: topic ? 'below the confidence threshold' : 'no teachable topic' });
     return { ok: true, offered: false };
   }
 
@@ -109,23 +113,26 @@ async function onTurn(msg, sender) {
     cached: cached !== null,
     createdAt: Date.now(),
   };
-  await setOffer(offer);
-  await badge('1');
-  await broadcast({ type: 'offer', offer });
+  await setOffer(tabId, offer);
+  await badge('1', tabId);
+  await broadcast({ type: 'offer', tabId, offer });
   return { ok: true, offered: true };
 }
 
-async function onDismiss() {
-  await clearOffer();
-  await badge('');
+async function onDismiss(tabId) {
+  await clearOffer(tabId);
+  await badge('', tabId);
   return { ok: true };
 }
+
+// A closed tab's conversation is over; do not leave its state behind.
+chrome.tabs.onRemoved.addListener((tabId) => { void forgetTab(tabId); });
 
 /* ----------------------------------------------------------- the search */
 
 /** The click. This is the only path that spends a search. */
-async function onAccept() {
-  const offer = await getOffer();
+async function onAccept(tabId) {
+  const offer = await getOffer(tabId);
   if (!offer) return { ok: false, error: 'That suggestion expired. Send another message.' };
 
   const settings = await getSettings();
@@ -134,7 +141,7 @@ async function onAccept() {
   }
 
   const variant = variantKey(settings);
-  const seen = await getSeen();
+  const seen = await getSeen(tabId);
 
   let videos = await cacheGet(offer.topic.key, variant, settings.cacheTtlHours);
   let fromCache = videos !== null;
@@ -170,21 +177,21 @@ async function onAccept() {
     seen,
   }).slice(0, settings.count);
 
-  await markSeen(ranked.map((v) => v.id));
-  await clearOffer();
-  await badge('');
+  await markSeen(tabId, ranked.map((v) => v.id));
+  await clearOffer(tabId);
+  await badge('', tabId);
 
   const result = { topic: offer.topic, videos: ranked, cached: fromCache };
-  await broadcast({ type: 'results', result });
+  await broadcast({ type: 'results', tabId, result });
   return { ok: true, result };
 }
 
 /* --------------------------------------------------------------- shared */
 
-async function getState() {
+async function getState(tabId) {
   const settings = await getSettings();
   const [offer, quota, cache] = await Promise.all([
-    getOffer(),
+    getOffer(tabId),
     getQuota(settings.dailySearches),
     cacheStats(),
   ]);
@@ -193,6 +200,7 @@ async function getState() {
     hasKey: !!settings.apiKey,
     playerBase: settings.playerBase,
     build: BUILD,
+    tabId,
   };
 }
 
@@ -205,11 +213,11 @@ function safeHost(url) {
   try { return new URL(url).host; } catch { return null; }
 }
 
-async function badge(text) {
+async function badge(text, tabId) {
   try {
-    await chrome.action.setBadgeText({ text });
+    await chrome.action.setBadgeText(tabId ? { text, tabId } : { text });
     await chrome.action.setBadgeBackgroundColor({ color: '#c85c2e' });
-  } catch { /* badge is cosmetic */ }
+  } catch { /* badge is cosmetic, and the tab may have gone */ }
 }
 
 /** Tell every open panel. No listener is a normal state, not an error. */

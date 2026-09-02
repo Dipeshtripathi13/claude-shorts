@@ -17,6 +17,8 @@ let hasKey = false;
 let index = 0;
 /** The https page that hosts the embed; empty means play in a window. */
 let playerBase = '';
+/** Which tab this panel belongs to; broadcasts for other tabs are ignored. */
+let myTabId = null;
 
 function show(pane) {
   for (const p of PANES) $(p).hidden = p !== pane;
@@ -218,6 +220,10 @@ function send(msg) {
 }
 
 chrome.runtime.onMessage.addListener((msg) => {
+  // Broadcasts reach every panel in every tab. Only act on our own tab's, or a
+  // search run in one chat shows up in the panel of every other one.
+  if (msg?.tabId != null && myTabId != null && msg.tabId !== myTabId) return false;
+
   if (msg?.type === 'offer') renderOffer(msg.offer);
   else if (msg?.type === 'results') renderResults(msg.result);
   else if (msg?.type === 'no-offer' && !result) {
@@ -279,6 +285,7 @@ async function init() {
 
   hasKey = state.hasKey;
   playerBase = state.playerBase ?? '';
+  myTabId = state.tabId ?? null;
   $('playnote').hidden = !!playerBase;
   $('quota').textContent = hasKey
     ? `${state.quota.remaining}/${state.quota.limit} searches left today`

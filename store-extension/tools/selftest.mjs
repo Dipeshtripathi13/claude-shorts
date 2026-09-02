@@ -41,6 +41,7 @@ const broadcasts = [];
 
 globalThis.chrome = {
   storage: { local: makeArea(), session: makeArea() },
+  tabs: { create: async () => {}, sendMessage: async () => {}, onRemoved: { addListener: () => {} } },
   runtime: {
     onMessage: { addListener: (fn) => listeners.message.push(fn) },
     onInstalled: { addListener: (fn) => listeners.installed.push(fn) },
@@ -53,7 +54,6 @@ globalThis.chrome = {
     setBadgeText: async () => {},
     setBadgeBackgroundColor: async () => {},
   },
-  tabs: { create: async () => {}, sendMessage: async () => {} },
 };
 
 /* ----------------------------------------------------------- fetch stub */
@@ -100,7 +100,8 @@ await import('../src/background.js');
 const handler = listeners.message[0];
 assert.ok(handler, 'background.js should register a message listener');
 
-function send(msg, sender = {}) {
+/** Every real caller lives in a tab; default to one so state is scoped. */
+function send(msg, sender = { tab: { id: 1 } }) {
   return new Promise((resolve) => handler(msg, sender, resolve));
 }
 
@@ -236,6 +237,35 @@ test('clips longer than the ceiling are filtered out', async () => {
   for (const v of res.result.videos) {
     assert.ok(v.durationSec <= 40, `${v.durationSec}s should have been filtered`);
   }
+});
+
+test('one tab\'s offer never appears in another tab', async () => {
+  await reset();
+  const gemini = { tab: { id: 11 } };
+  const chatgpt = { tab: { id: 22 } };
+
+  await send({ type: 'turn', text: 'explain how the solar system formed' }, gemini);
+
+  const other = await send({ type: 'get-state' }, chatgpt);
+  assert.equal(other.offer, null, 'a different tab must not inherit the offer');
+
+  const same = await send({ type: 'get-state' }, gemini);
+  assert.match(same.offer.topic.query, /solar system/);
+
+  // Accepting in the tab that never had an offer must not search.
+  const before = fetchCalls.length;
+  const res = await send({ type: 'accept' }, chatgpt);
+  assert.equal(res.ok, false);
+  assert.equal(fetchCalls.length, before, 'no search for a tab with no offer');
+});
+
+test('broadcasts carry the tab they belong to', async () => {
+  await reset();
+  broadcasts.length = 0;
+  await send({ type: 'turn', text: 'explain how the krebs cycle works' }, { tab: { id: 7 } });
+  const offer = broadcasts.find((m) => m.type === 'offer');
+  assert.ok(offer, 'an offer should be broadcast');
+  assert.equal(offer.tabId, 7, 'panels filter on this; without it every panel reacts');
 });
 
 test('the panel is told about offers and results', async () => {
