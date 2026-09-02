@@ -1,0 +1,93 @@
+Tangent notices when you ask an AI assistant about something worth
+understanding, and finds YouTube Shorts that explain it.
+
+Ask Claude to plan a database migration, and a button appears in the side
+panel: "Find explainers: database migration." Click it and you get a handful
+of 15 to 90 second Shorts on that exact topic, ranked for brevity and
+relevance, playable right there beside the conversation. Ignore it and
+nothing happens at all.
+
+
+WHY IT IS NOT A DISTRACTION
+
+Nothing plays unless you ask. A message raises a button, not a video.
+Working out the topic happens on your own device and costs nothing, so
+ignoring the button is free — and that is the normal case.
+
+It knows a question from a chore. "What is photosynthesis" gets a button.
+"Rerun the tests", "commit this", "yes" get nothing at all.
+
+No feed. A fixed set of results. No autoplay, no recommendations, no
+"up next", no infinite scroll. It is a handful of clips about one topic,
+and then it stops.
+
+
+HOW IT PICKS
+
+Tangent reads the message you just typed and works out what concept is in
+it — locally, on your machine, with no network call. It recognises hundreds
+of technical and scientific concepts, and it deliberately stays quiet when
+a message is a chore rather than a question.
+
+Results are then ranked for what actually helps in a short break: brevity,
+how well the title matches your topic, and variety of creators. Clickbait
+and engagement bait are pushed down.
+
+
+PRIVACY
+
+Tangent reads only the message you just typed, and only on AI chat sites.
+Not the assistant's replies, not your history, not any other site.
+
+Before anything is searched, code blocks, file paths, URLs, email addresses,
+IP addresses and anything shaped like an API key or password is stripped
+out. If a message looks like it contains a credential, Tangent discards it
+entirely and offers nothing.
+
+What reaches YouTube is a short phrase such as "database migration postgres
+explained" — never your message.
+
+There is no Tangent server, no analytics, no tracking and no account.
+Everything is stored in your own browser.
+
+Full privacy policy:
+https://dipeshtripathi13.github.io/claude-shorts/privacy.html
+
+
+WHERE IT WORKS
+
+Claude, ChatGPT, Gemini, Google AI Studio, Grok, DeepSeek, Qwen, Kimi,
+Perplexity, Mistral, Microsoft Copilot, Poe, Meta AI and HuggingChat.
+
+Any of them can be switched off individually in settings.
+
+
+SETUP
+
+Tangent searches with your own free YouTube Data API key, so your usage is
+yours and nothing is routed through anyone else's service. Click the Tangent
+icon on any chat page and the panel walks you through creating one; it takes
+a few minutes and costs nothing.
+
+Google grants 100 searches per day per key. Tangent stops at 90 to leave you
+headroom, and reuses saved results so the same topic never costs twice.
+
+
+WORTH KNOWING
+
+- A free YouTube Data API key is required. There is no shared key, by design.
+- Clips play inside the panel through a small open-source page, because
+  YouTube will not play inside a browser extension panel directly. That page
+  does nothing but embed the official player, and you can host your own copy
+  or turn inline playback off.
+- Tangent narrows the page so the panel sits beside your conversation. If a
+  site's layout reacts badly, you can switch that off in settings.
+
+
+OPEN SOURCE
+
+MIT licensed. Every claim above can be checked by reading the source:
+https://github.com/Dipeshtripathi13/claude-shorts
+
+Tangent is an independent project. It is not affiliated with, endorsed by,
+or sponsored by Google, YouTube, Anthropic or OpenAI.

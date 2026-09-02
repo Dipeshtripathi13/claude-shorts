@@ -1,0 +1,106 @@
+=== SINGLE PURPOSE DESCRIPTION ===
+
+Tangent has one purpose: to suggest short explainer videos about the topic of
+the message a user just sent to an AI chat assistant.
+
+When the user sends a message on a supported AI chat site, the extension reads
+that single message locally, derives a search topic from it, and offers a button
+in a side panel. If the user clicks that button, it searches YouTube using the
+user's own API key and displays a small set of short videos about that topic.
+The user can play one in the panel or open it on YouTube.
+
+It does nothing else. It does not read the assistant's replies, the conversation
+history, or any other site. It does not modify the chat page's content, inject
+advertising, or collect analytics.
+
+
+=== STORAGE JUSTIFICATION ===
+
+Stores, entirely locally in the browser:
+
+1. The user's own YouTube Data API key, which the extension needs in order to
+   search on their behalf.
+2. Their preferences: result count, maximum clip length, confidence threshold,
+   region and language, which sites are enabled, and whether the page is
+   narrowed when the panel opens.
+3. A short-lived cache of search results, keyed by topic. Google grants only
+   100 searches per day per key, so reusing results for a repeated topic is
+   what keeps the extension usable within that limit. Cached entries expire
+   after 7 days and never persist beyond 30, as YouTube's Developer Policies
+   require.
+4. Per-tab session state: the pending suggestion, and which clips have already
+   been shown. The suggestion must survive the service worker being suspended
+   between the user's message and their click.
+
+None of this is synced or transmitted anywhere.
+
+
+=== SCRIPTING JUSTIFICATION ===
+
+Used only to inject the extension's own bundled content script into a supported
+AI chat tab that was already open when the extension was installed, updated or
+reloaded.
+
+Browsers do not add content scripts to pages that were already loaded. Without
+this permission, clicking the toolbar button in such a tab does nothing at all
+until the user manually reloads the page, which users reasonably interpret as
+the extension being broken.
+
+Injection targets only the AI chat sites already declared in content_scripts,
+and only the extension's own script file that ships inside the package. No
+remotely hosted, generated or evaluated code is ever injected.
+
+
+=== HOST PERMISSION JUSTIFICATION ===
+
+Two groups, both required by the single purpose.
+
+1. https://www.googleapis.com/* — to call the YouTube Data API v3 with the
+user's own API key. This is the only outbound request the extension makes, and
+the only way it can find videos.
+
+2. The AI chat sites: claude.ai, chatgpt.com, chat.openai.com,
+gemini.google.com, aistudio.google.com, grok.com, chat.deepseek.com,
+chat.qwen.ai, kimi.com, kimi.moonshot.cn, perplexity.ai, chat.mistral.ai,
+copilot.microsoft.com, poe.com, meta.ai and huggingface.co/chat.
+
+On these, the extension reads the message the user just typed in order to
+determine the topic, and injects its own side panel to display suggestions. It
+does not read the assistant's replies or the conversation history. Every site is
+an AI chat assistant, which is exactly the extension's single purpose, and each
+can be switched off individually in settings.
+
+
+=== REMOTE CODE ===
+
+Answer: No, I am not using remote code.
+
+All executable code ships inside the package. The panel embeds YouTube's
+official player through a small static page the developer hosts
+(docs/player.html in the public repository), which is required because YouTube
+refuses to play inside a chrome-extension:// frame. That page contains no logic
+belonging to the extension, and inline playback can be disabled in settings.
+
+
+=== DATA USE DISCLOSURES ===
+
+Tick "Yes" for:
+  - Personal communications  (the message a user types into a chat)
+  - Website content          (the composer text on the declared chat sites)
+
+Tick "No" for everything else: personally identifiable information, health
+information, financial and payment information, authentication information,
+location, web history, and user activity.
+
+Then certify all three:
+  [x] I do not sell or transfer user data to third parties, outside of the
+      approved use cases
+  [x] I do not use or transfer user data for purposes that are unrelated to my
+      item's single purpose
+  [x] I do not use or transfer user data to determine creditworthiness or for
+      lending purposes
+
+
+=== PRIVACY POLICY URL ===
+
+https://dipeshtripathi13.github.io/claude-shorts/privacy.html
