@@ -80,6 +80,17 @@ describe('extractTopic', () => {
     }
   });
 
+  test('a paired topic reads in the order it was written', () => {
+    // Scoring finds the strongest phrase first, which is rarely the first one
+    // said. Read back unsorted, "how do I reverse a linked list" became
+    // "linked list reverse".
+    const t = extractTopic('how can i reverse a linked list?')!;
+    assert.equal(t.label, 'reverse linked list', `got "${t.label}"`);
+
+    const p = extractTopic('our postgres connection pool keeps exhausting under load')!;
+    assert.equal(p.label, 'postgres connection pool', `got "${p.label}"`);
+  });
+
   test('the user\'s own "explain" never leaks into the query', () => {
     const t = extractTopic('can you explain what a bloom filter is')!;
     assert.ok(!/\bexplain\b(?!ed)/.test(t.query), `got "${t.query}"`);

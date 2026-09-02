@@ -1,11 +1,10 @@
 Tangent notices when you ask an AI assistant about something worth
 understanding, and finds YouTube Shorts that explain it.
 
-Ask your assistant to plan a database migration, and a button appears in the
-side panel: "Find explainers: database migration." Click it and you get a handful
-of 15 to 90 second Shorts on that exact topic, ranked for brevity and
-relevance, playable right there beside the conversation. Ignore it and
-nothing happens at all.
+Ask "how can I reverse a linked list?" and a button appears in the side panel:
+"Find explainers: reverse linked list." Click it and you get a handful of 15 to
+90 second Shorts on that exact topic, ranked for brevity and relevance, playable
+right there beside the conversation. Ignore it and nothing happens at all.
 
 
 WHY IT IS NOT A DISTRACTION

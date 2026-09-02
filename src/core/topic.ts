@@ -173,7 +173,7 @@ function looksProper(raw: string, phrase: string): boolean {
  * and a second strong, non-overlapping term exists, pair them.
  */
 function buildTerms(top: Candidate, ranked: Candidate[]): string[] {
-  const terms = [top.phrase];
+  const terms: Candidate[] = [top];
   const used = new Set(top.phrase.split(' '));
   const topWords = top.phrase.split(' ').length;
   if (topWords <= 2) {
@@ -183,11 +183,18 @@ function buildTerms(top: Candidate, ranked: Candidate[]): string[] {
       if (cw.some((w) => used.has(w))) continue;
       if (!c.fromLexicon && c.score < 2.2) continue;
       if (topWords + cw.length > 4) continue;
-      terms.push(c.phrase);
+      terms.push(c);
       break;
     }
   }
-  return terms;
+  // Read the pair back in the order the user wrote it. Scoring finds the
+  // strongest phrase first, which is not usually the first one said: "how do I
+  // reverse a linked list" scored "linked list" above "reverse" and read back
+  // as "linked list reverse". Source order gives "reverse linked list", which
+  // is both the natural phrase and the better search.
+  return terms
+    .sort((a, b) => a.firstIndex - b.firstIndex)
+    .map((c) => c.phrase);
 }
 
 function buildQuery(label: string, kind: Topic['kind']): string {
