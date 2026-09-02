@@ -60,24 +60,54 @@ async function accept() {
   $('loadingText').textContent = `Searching for “${offer.topic.query}”…`;
   show('paneLoading');
 
-  const res = await send({ type: 'accept' });
+  // The reply already carries the videos. Rendering from the broadcast alone
+  // meant one lost message left the panel spinning forever, with the answer
+  // sitting unread in a variable. The broadcast is now only how *other* open
+  // panels find out.
+  let res;
+  try {
+    res = await withTimeout(send({ type: 'accept' }), 25_000);
+  } catch (e) {
+    fail(`The search did not come back (${e.message}). The extension's background worker may have been suspended — try again.`);
+    return;
+  }
 
-  if (res?.ok) return;                    // results arrive via the broadcast
+  if (res?.ok && res.result) { renderResults(res.result); return; }
   if (res?.error === 'no-key') { show('paneSetup'); return; }
-  $('errorText').textContent = res?.error ?? 'The search failed.';
+  fail(res?.error ?? 'The search failed.');
+}
+
+function fail(message) {
+  $('errorText').textContent = message;
+  $('btnFind').disabled = false;
   show('paneError');
+}
+
+/** A promise that can never leave the panel spinning indefinitely. */
+function withTimeout(promise, ms) {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) => setTimeout(() => reject(new Error('timed out')), ms)),
+  ]);
 }
 
 /* --------------------------------------------------------------- results */
 
 function renderResults(next) {
+  // A duplicate from the broadcast must not reset the clip the user is watching,
+  // but it must still render if the results pane is not the one showing.
+  if (result && next?.topic?.key === result.topic?.key && !$('paneResults').hidden) return;
   result = next;
   offer = null;
   index = 0;
   playing = false;
   say(`Searched “${next.topic.query}” · ${next.cached ? 'from your saved results' : 'fresh'}`);
-  paint();
   show('paneResults');
+  try {
+    paint();
+  } catch (e) {
+    fail(`Could not draw the results: ${e.message}`);
+  }
 }
 
 function paint() {
