@@ -9,7 +9,7 @@
 import { readFileSync, writeFileSync, existsSync, mkdirSync, rmSync, cpSync, readdirSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { execFileSync } from 'node:child_process';
+import { execFileSync, spawnSync } from 'node:child_process';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const STAGE = join(ROOT, 'load-unpacked');
@@ -61,6 +61,13 @@ for (const page of listHtml(join(ROOT, 'src'))) {
       problems.push(`${page.slice(ROOT.length + 1)} references a missing file: ${ref}`);
     }
   }
+}
+
+// A ReferenceError only appears at runtime, so check before packaging rather
+// than after a user reports a blank panel.
+const lint = spawnSync(process.execPath, [join(ROOT, 'tools', 'lint.mjs')], { cwd: ROOT, encoding: 'utf8' });
+if (lint.status !== 0) {
+  problems.push('undeclared identifiers found:\n' + (lint.stderr || lint.stdout).trim());
 }
 
 if (problems.length) {

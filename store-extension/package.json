@@ -10,7 +10,8 @@
     "build": "npm run build:core && npm run build:icons",
     "package": "npm run build && node tools/package.mjs",
     "clean": "rm -rf src/generated icons dist",
-    "test": "npm run build:core && node --test tools/selftest.mjs"
+    "test": "npm run build:core && npm run lint && node --test tools/selftest.mjs",
+    "lint": "node tools/lint.mjs"
   },
   "devDependencies": {
     "typescript": "^5.7.0"

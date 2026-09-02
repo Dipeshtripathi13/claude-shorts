@@ -15,6 +15,9 @@ let offer = null;
 let result = null;
 let hasKey = false;
 let index = 0;
+/** Whether the current clip is playing inline, and the page that hosts it. */
+let playing = false;
+let playerBase = '';
 
 function show(pane) {
   for (const p of PANES) $(p).hidden = p !== pane;
