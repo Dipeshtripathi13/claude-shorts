@@ -1,0 +1,201 @@
+/**
+ * Panel logic. Ships inside the package: no remotely hosted code, which
+ * Manifest V3 requires and the Chrome Web Store checks for.
+ *
+ * Nothing loads from YouTube until the viewer presses play on a specific clip.
+ * Until then a card is a thumbnail, so the panel stays silent and pulls in no
+ * third-party frames the user did not ask for.
+ */
+
+const $ = (id) => document.getElementById(id);
+
+const PANES = ['paneSetup', 'paneIdle', 'paneOffer', 'paneLoading', 'paneResults', 'paneError'];
+
+let offer = null;
+let result = null;
+let index = 0;
+let playing = false;
+
+function show(pane) {
+  for (const p of PANES) $(p).hidden = p !== pane;
+}
+
+function say(text) {
+  $('why').textContent = text;
+}
+
+/* ---------------------------------------------------------------- offers */
+
+function renderOffer(next) {
+  offer = next;
+  result = null;
+  $('offerSubject').textContent = next.topic.label;
+  $('offerQuery').textContent = `would search “${next.topic.query}”`;
+  $('offerCost').textContent = next.cached
+    ? 'Already saved from an earlier search — costs nothing.'
+    : 'Uses one of today’s searches.';
+  $('btnFind').disabled = false;
+  say(`Spotted in your message · ${Math.round(next.topic.confidence * 100)}% confident`);
+  show('paneOffer');
+}
+
+async function accept() {
+  if (!offer) return;
+  $('btnFind').disabled = true;
+  $('loadingText').textContent = `Searching for “${offer.topic.query}”…`;
+  show('paneLoading');
+
+  const res = await send({ type: 'accept' });
+
+  if (res?.ok) return;                    // results arrive via the broadcast
+  if (res?.error === 'no-key') { show('paneSetup'); return; }
+  $('errorText').textContent = res?.error ?? 'The search failed.';
+  show('paneError');
+}
+
+/* --------------------------------------------------------------- results */
+
+function renderResults(next) {
+  result = next;
+  offer = null;
+  index = 0;
+  playing = false;
+  say(`Searched “${next.topic.query}” · ${next.cached ? 'from your saved results' : 'fresh'}`);
+  paint();
+  show('paneResults');
+}
+
+function paint() {
+  if (!result?.videos?.length) return;
+  const v = result.videos[index];
+
+  const frame = $('frame');
+  frame.textContent = '';
+
+  if (playing) {
+    const f = document.createElement('iframe');
+    f.src = `${v.embedUrl}&autoplay=1`;
+    f.allow = 'accelerometer; autoplay; encrypted-media; picture-in-picture; web-share';
+    f.allowFullscreen = true;
+    f.title = v.title;
+    frame.appendChild(f);
+  } else {
+    const img = document.createElement('img');
+    img.src = v.thumbnail;
+    img.alt = '';
+    img.loading = 'lazy';
+    img.referrerPolicy = 'no-referrer';
+    const btn = document.createElement('button');
+    btn.className = 'play';
+    btn.setAttribute('aria-label', `Play: ${v.title}`);
+    const glyph = document.createElement('span');
+    glyph.textContent = '▶';
+    btn.appendChild(glyph);
+    btn.addEventListener('click', () => { playing = true; paint(); });
+    frame.append(img, btn);
+  }
+
+  $('vtitle').textContent = v.title;
+  $('vmeta').textContent = [v.channel, fmtDuration(v.durationSec), fmtViews(v.viewCount)]
+    .filter(Boolean).join(' · ');
+
+  const strip = $('strip');
+  strip.textContent = '';
+  result.videos.forEach((vid, i) => {
+    const b = document.createElement('button');
+    b.setAttribute('aria-current', String(i === index));
+    b.title = vid.title;
+    const t = document.createElement('img');
+    t.src = vid.thumbnail;
+    t.alt = '';
+    t.loading = 'lazy';
+    t.referrerPolicy = 'no-referrer';
+    b.appendChild(t);
+    b.addEventListener('click', () => { index = i; playing = false; paint(); });
+    strip.appendChild(b);
+  });
+}
+
+function move(delta) {
+  if (!result) return;
+  index = (index + delta + result.videos.length) % result.videos.length;
+  playing = false;
+  paint();
+}
+
+/* ------------------------------------------------------------------ chat */
+
+function send(msg) {
+  return chrome.runtime.sendMessage(msg).catch((e) => ({ ok: false, error: e?.message }));
+}
+
+chrome.runtime.onMessage.addListener((msg) => {
+  if (msg?.type === 'offer') renderOffer(msg.offer);
+  else if (msg?.type === 'results') renderResults(msg.result);
+  else if (msg?.type === 'no-offer' && !result) {
+    say(`Nothing to suggest here — ${msg.reason}.`);
+    show('paneIdle');
+  }
+  return false;
+});
+
+/* -------------------------------------------------------------- controls */
+
+$('btnFind').addEventListener('click', accept);
+$('btnSkip').addEventListener('click', async () => {
+  await send({ type: 'dismiss' });
+  offer = null;
+  say('Skipped. Your next message raises a new one.');
+  show('paneIdle');
+});
+$('btnPrev').addEventListener('click', () => move(-1));
+$('btnNext').addEventListener('click', () => move(1));
+$('btnOpen').addEventListener('click', () => {
+  if (result) window.open(result.videos[index].url, '_blank', 'noopener');
+});
+$('btnBack').addEventListener('click', () => show(offer ? 'paneOffer' : 'paneIdle'));
+$('btnSettings').addEventListener('click', () => chrome.runtime.openOptionsPage());
+$('btnOpenOptions').addEventListener('click', () => chrome.runtime.openOptionsPage());
+// The content script frames this page and owns whether it is visible, so the
+// close button asks the parent rather than trying to hide itself.
+$('btnClose').addEventListener('click', () => {
+  window.parent.postMessage({ tangent: 'close' }, '*');
+});
+
+document.addEventListener('keydown', (e) => {
+  if (!$('paneOffer').hidden && (e.key === 'Enter' || e.key === 'f')) { accept(); e.preventDefault(); return; }
+  if ($('paneResults').hidden) return;
+  if (e.key === 'j' || e.key === 'ArrowDown') { move(1); e.preventDefault(); }
+  else if (e.key === 'k' || e.key === 'ArrowUp') { move(-1); e.preventDefault(); }
+  else if (e.key === 'Enter') { playing = true; paint(); }
+  else if (e.key === 'o') { $('btnOpen').click(); }
+});
+
+/* ------------------------------------------------------------------ boot */
+
+async function init() {
+  const state = await send({ type: 'get-state' });
+  if (!state?.ok) { show('paneIdle'); return; }
+
+  $('quota').textContent = state.hasKey
+    ? `${state.quota.remaining}/${state.quota.limit} searches left today`
+    : 'No API key yet';
+
+  if (!state.hasKey) { show('paneSetup'); return; }
+  if (state.offer) { renderOffer(state.offer); return; }
+  show('paneIdle');
+}
+
+function fmtDuration(s) {
+  const m = Math.floor(s / 60);
+  return m ? `${m}m ${s % 60}s` : `${s}s`;
+}
+
+function fmtViews(n) {
+  if (typeof n !== 'number') return '';
+  if (n >= 1e6) return `${(n / 1e6).toFixed(1).replace(/\.0$/, '')}M views`;
+  if (n >= 1e3) return `${Math.round(n / 1e3)}K views`;
+  return `${n} views`;
+}
+
+init();

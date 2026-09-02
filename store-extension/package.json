@@ -1,0 +1,18 @@
+{
+  "name": "tangent-extension",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Standalone Chrome/Brave extension: short explainer videos for whatever you just asked an AI chat.",
+  "type": "module",
+  "scripts": {
+    "build:core": "tsc -p tsconfig.core.json",
+    "build:icons": "node tools/make-icons.mjs",
+    "build": "npm run build:core && npm run build:icons",
+    "package": "npm run build && node tools/package.mjs",
+    "clean": "rm -rf src/generated icons dist",
+    "test": "npm run build:core && node --test tools/selftest.mjs"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.0"
+  }
+}

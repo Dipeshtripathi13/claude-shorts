@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tangent — getting started</title>
+<link rel="stylesheet" href="options.css">
+</head>
+<body>
+<main>
+  <h1>Tangent is installed</h1>
+  <p class="sub">Short explainer videos for whatever you just asked your AI assistant.</p>
+
+  <section>
+    <h2>How it works</h2>
+    <p>When you send a message to Claude or ChatGPT, Tangent reads that one
+       message locally and works out what it is about. If there is a concept
+       worth explaining, a <strong>Find explainers</strong> button appears in the
+       panel.</p>
+    <p><strong>Nothing is searched, and nothing leaves your browser, until you
+       click that button.</strong> A message you ignore costs nothing and goes
+       nowhere.</p>
+  </section>
+
+  <section>
+    <h2>Two things to do</h2>
+    <ol>
+      <li><strong>Add a YouTube API key.</strong> Tangent searches with your own
+          key, so nothing is routed through anyone else's server.</li>
+      <li><strong>Open a chat and click the Tangent icon</strong> in your toolbar
+          to show the panel. Pin the icon so it is easy to reach.</li>
+    </ol>
+    <div class="row">
+      <button class="primary" id="btnOptions" type="button">Add my API key</button>
+    </div>
+    <p class="note" style="margin-top:12px">Already had a chat tab open? Reload it
+       once — browsers do not add extensions to pages that were already loaded.</p>
+  </section>
+
+  <section>
+    <h2>What Tangent reads</h2>
+    <p>Only the message you just typed, on <code>claude.ai</code>,
+       <code>chatgpt.com</code> and <code>chat.openai.com</code>. Not the replies,
+       not your history, not any other site.</p>
+    <p>Before anything is searched, code, file paths, URLs, email addresses and
+       anything shaped like a password or API key are stripped out. If a message
+       looks like it contains a credential, Tangent drops it entirely and offers
+       nothing.</p>
+    <p>What reaches YouTube is a short phrase such as
+       <code>database migration postgres explained</code> — never your message.</p>
+  </section>
+
+  <footer>
+    <p><a href="https://github.com/Dipeshtripathi13/claude-shorts/blob/main/store-extension/PRIVACY.md" target="_blank" rel="noopener">Privacy policy</a>
+       · <a href="https://github.com/Dipeshtripathi13/claude-shorts" target="_blank" rel="noopener">Source code</a></p>
+    <p class="note">Not affiliated with Google, YouTube, Anthropic or OpenAI.</p>
+  </footer>
+</main>
+<script type="module" src="welcome.js"></script>
+</body>
+</html>

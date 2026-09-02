@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tangent</title>
+<link rel="stylesheet" href="panel.css">
+</head>
+<body>
+
+<header>
+  <span class="mark" aria-hidden="true"></span>
+  <span class="title" id="title">Tangent</span>
+  <button class="icon" id="btnSettings" title="Settings" aria-label="Settings">&#9881;</button>
+  <button class="icon" id="btnClose" title="Hide panel" aria-label="Hide panel">&times;</button>
+  <p class="why" id="why">Ask your assistant something. If there is a concept worth explaining, a button appears here.</p>
+</header>
+
+<main>
+  <!-- No API key yet -->
+  <section id="paneSetup" class="pane" hidden>
+    <h2>One-time setup</h2>
+    <p>Tangent searches YouTube with <strong>your own</strong> API key, so your
+       usage is yours and nothing is routed through anyone else's server.</p>
+    <ol>
+      <li>Create a free key in the Google Cloud console</li>
+      <li>Enable <em>YouTube Data API v3</em></li>
+      <li>Paste the key into settings</li>
+    </ol>
+    <button class="primary" id="btnOpenOptions">Open settings</button>
+  </section>
+
+  <!-- Waiting for a message -->
+  <section id="paneIdle" class="pane">
+    <div class="idle">
+      <p class="big">Waiting for your next message</p>
+      <p>Nothing is searched, and nothing leaves this browser, until you click.</p>
+    </div>
+  </section>
+
+  <!-- A topic was spotted -->
+  <section id="paneOffer" class="pane" hidden>
+    <p class="kicker">Spotted in your message</p>
+    <p class="subject" id="offerSubject"></p>
+    <p class="query" id="offerQuery"></p>
+    <button class="primary" id="btnFind">Find explainers</button>
+    <p class="cost" id="offerCost"></p>
+    <button class="link" id="btnSkip">Not now</button>
+  </section>
+
+  <!-- Searching -->
+  <section id="paneLoading" class="pane" hidden>
+    <div class="idle">
+      <div class="spinner" role="status" aria-label="Searching"></div>
+      <p id="loadingText">Searching…</p>
+    </div>
+  </section>
+
+  <!-- Results -->
+  <section id="paneResults" class="pane" hidden>
+    <div class="frame" id="frame"></div>
+    <h2 class="vtitle" id="vtitle"></h2>
+    <p class="vmeta" id="vmeta"></p>
+    <div class="row">
+      <button class="act" id="btnPrev">Previous</button>
+      <button class="act" id="btnNext">Next</button>
+      <button class="act" id="btnOpen">Open on YouTube</button>
+    </div>
+    <div class="strip" id="strip"></div>
+  </section>
+
+  <!-- Something went wrong -->
+  <section id="paneError" class="pane" hidden>
+    <div class="idle">
+      <p class="big">No luck</p>
+      <p id="errorText"></p>
+      <button class="act" id="btnBack">Back</button>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <span id="quota"></span>
+  <span id="attribution">Videos from YouTube</span>
+</footer>
+
+<script type="module" src="panel.js"></script>
+</body>
+</html>

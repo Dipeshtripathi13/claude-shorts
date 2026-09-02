@@ -112,6 +112,13 @@ const PHRASE_SOURCE = [
   'balance sheet', 'design pattern', 'technical debt', 'test driven development', 'system design',
   'merge conflict', 'cherry pick', 'semantic versioning', 'dependency injection', 'type system',
   'memory management', 'event loop', 'service mesh', 'load balancer', 'reverse proxy',
+  // Terms the scoring heuristics handle badly on their own, usually because a
+  // component word is common chat filler ("write", "read", "log", "change").
+  'write ahead log', 'change data capture', 'read replica', 'hash map',
+  'content delivery network', 'binary search tree', 'message broker',
+  'load balancing', 'feature flag', 'idempotency key', 'connection pooling',
+  'database index', 'query optimizer', 'lock contention', 'thread pool',
+  'explain analyze', 'query plan',
 ];
 LEXICON_PHRASES.push(...PHRASE_SOURCE.sort((a, b) => b.length - a.length));
 

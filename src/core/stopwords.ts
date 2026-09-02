@@ -31,6 +31,7 @@ one two three first second third last final new old current previous whole entir
 should would could shall might must may able possible right wrong better best worse
 give given gives take taken takes get gets got getting put puts show shows shown tell tells
 understand understanding learn learning wonder wondering curious figure figuring
+explain explains explained explaining describe describes summarize summarise
 heavy huge quick tricky weird nasty messy proper decent solid general actual real
 `.trim().split(/\s+/));
 

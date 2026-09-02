@@ -1,0 +1,72 @@
+# Tangent — the store build
+
+A standalone Chrome and Brave extension. Unlike the [daemon-based
+version](../extension) in this repo, it needs nothing installed on your machine:
+all logic ships in the package and it searches YouTube with the user's own API
+key.
+
+That difference is not cosmetic. The Chrome Web Store forbids remotely hosted
+code under Manifest V3, and the daemon build serves its whole panel UI from
+`127.0.0.1` — which would be rejected, and would also leave a reviewer staring
+at a "connect to the local daemon" screen. **This is the version to publish.**
+
+## How it differs
+
+| | `../extension` (daemon) | `store-extension` (this) |
+|---|---|---|
+| Needs a local install | yes, `claude-shorts` daemon | no |
+| Where the logic lives | on the daemon | in the package |
+| Video source | YouTube API, yt-dlp or Piped | YouTube API only |
+| Cache and quota | shared with the CLI | `chrome.storage`, per browser |
+| Publishable | no | yes |
+| Brave | side panel, unreliable | in-page panel, works |
+
+Both share one topic extractor — `tsconfig.core.json` compiles the same
+`src/core/*.ts` this repo's CLI uses, so a fix to the lexicon or the ranking
+improves both and there is no forked copy to drift.
+
+## Build
+
+```bash
+npm install
+npm run build      # compile the shared core, generate the icons
+npm test           # 12 self-tests; no API key, no network
+npm run package    # -> dist/tangent-1.0.0.zip and dist/unpacked/
+```
+
+Load `dist/unpacked` at `chrome://extensions` → Developer mode → Load unpacked.
+
+## Layout
+
+```
+manifest.json          MV3, four host permissions, no remote code
+src/background.js      service worker: extracts topics, and only searches on a click
+src/content.js         reads the composer, hosts the panel iframe
+src/youtube.js         YouTube Data API v3 over fetch
+src/storage.js         settings, cache and daily budget on chrome.storage
+src/ui/                panel, options and welcome pages — all in-package
+src/generated/         compiled from ../src/core, do not edit
+tools/make-icons.mjs   writes the PNGs directly, no image dependency
+tools/package.mjs      validates then zips; refuses to package a broken build
+tools/selftest.mjs     drives the real message handlers against stubbed chrome.*
+```
+
+## The rule to preserve
+
+**Extract locally, search only on a click.** Naming the topic is free and
+offline, so it can happen on every message; the network call waits for intent.
+That is what keeps the extension inside YouTube's 100-searches-per-day limit and
+what keeps it from being a distraction. `tools/selftest.mjs` asserts it directly
+— `fetchCalls.length === 0` after a message, `2` after an accept.
+
+## What is not verified
+
+The self-tests stub `fetch`, so the YouTube request shape is exercised but has
+never been checked against the live API from inside the extension. Add a key in
+settings, click **Test key**, then run one real search before you submit.
+
+## Publishing
+
+See [SUBMISSION.md](SUBMISSION.md) for the listing copy, permission
+justifications, the data-use disclosures, and the checks to make first.
+[PRIVACY.md](PRIVACY.md) is the policy to host.

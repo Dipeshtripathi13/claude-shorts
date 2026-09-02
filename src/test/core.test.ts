@@ -66,6 +66,26 @@ describe('extractTopic', () => {
     });
   }
 
+  test('finds concepts whose parts are individually chat filler', () => {
+    // "write", "read", "change" and "log" are all noise on their own, so these
+    // only resolve because they are curated phrases.
+    for (const [input, expected] of [
+      ['what is a write ahead log in databases', 'write ahead log'],
+      ['how does change data capture work', 'change data capture'],
+      ['explain read replica lag', 'read replica'],
+    ] as Array<[string, string]>) {
+      const t = extractTopic(input);
+      assert.ok(t, `expected a topic for: ${input}`);
+      assert.ok(t.query.includes(expected), `got "${t.query}"`);
+    }
+  });
+
+  test('the user\'s own "explain" never leaks into the query', () => {
+    const t = extractTopic('can you explain what a bloom filter is')!;
+    assert.ok(!/\bexplain\b(?!ed)/.test(t.query), `got "${t.query}"`);
+    assert.ok(t.query.includes('bloom filter'));
+  });
+
   test('a known concept beats the same phrase padded with filler', () => {
     const t = extractTopic('I have a heavy database migration to plan this week');
     assert.ok(t);
