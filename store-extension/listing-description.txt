@@ -21,6 +21,14 @@ No feed. A fixed set of results. No autoplay, no recommendations, no
 and then it stops.
 
 
+YOU GET THE LAST WORD
+
+The phrase it will search sits in an editable box above the button, already
+filled in. Most of the time it is right and you just click. When it is not
+quite what you meant — or you want to narrow it — you type over it and search
+that instead.
+
+
 HOW IT PICKS
 
 Tangent reads the message you just typed and works out what concept is in

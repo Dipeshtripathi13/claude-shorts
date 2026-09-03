@@ -51,6 +51,14 @@ tools/package.mjs      validates then zips; refuses to package a broken build
 tools/selftest.mjs     drives the real message handlers against stubbed chrome.*
 ```
 
+## The phrase is editable
+
+The offer pane prefills the search phrase in a text field rather than printing
+it as a caption. The extractor is a heuristic and is sometimes wrong; the person
+reading it always knows whether it got their question right. An edited phrase is
+searched verbatim and gets its own cache key, so it cannot be served the guess's
+results.
+
 ## The rule to preserve
 
 **Extract locally, search only on a click.** Naming the topic is free and

@@ -239,6 +239,43 @@ test('clips longer than the ceiling are filtered out', async () => {
   }
 });
 
+test('an edited phrase is searched verbatim, with its own cache key', async () => {
+  await reset();
+  await send({ type: 'turn', text: 'what is the time complexity of an insert in a linked list' });
+
+  const res = await send({ type: 'accept', query: 'linked list insert complexity' });
+  assert.equal(res.ok, true, res.error);
+  assert.equal(res.result.topic.query, 'linked list insert complexity');
+  assert.equal(res.result.topic.edited, true);
+  const searched = fetchCalls.find((u) => u.includes('/search?'));
+  assert.match(decodeURIComponent(searched), /q=linked\+list\+insert\+complexity|q=linked list insert complexity/);
+});
+
+test('an edited phrase does not collide with the guess in the cache', async () => {
+  await reset();
+  const text = 'what is the time complexity of an insert in a linked list';
+
+  await send({ type: 'turn', text });
+  const guessed = await send({ type: 'accept' });
+  const calls = fetchCalls.length;
+
+  // A different phrase must not be served the guess's cached results.
+  await send({ type: 'turn', text });
+  const edited = await send({ type: 'accept', query: 'big o of linked list insertion' });
+  assert.equal(edited.ok, true, edited.error);
+  assert.equal(edited.result.cached, false, 'an edited phrase needs its own entry');
+  assert.ok(fetchCalls.length > calls, 'it should have cost a real search');
+  assert.notEqual(edited.result.topic.key, guessed.result.topic.key);
+});
+
+test('an empty edit falls back to the offered phrase', async () => {
+  await reset();
+  await send({ type: 'turn', text: 'explain how a bloom filter avoids false negatives' });
+  const res = await send({ type: 'accept', query: '   ' });
+  assert.equal(res.ok, true, res.error);
+  assert.match(res.result.topic.query, /bloom filter/);
+});
+
 test('one tab\'s offer never appears in another tab', async () => {
   await reset();
   const gemini = { tab: { id: 11 } };

@@ -47,7 +47,9 @@
   <section id="paneOffer" class="pane" hidden>
     <p class="kicker">Spotted in your message</p>
     <p class="subject" id="offerSubject"></p>
-    <p class="query" id="offerQuery"></p>
+    <label class="searchlabel" for="offerQuery">Searches for</label>
+    <input id="offerQuery" type="text" maxlength="120" spellcheck="false"
+           autocomplete="off" aria-label="What to search for; edit if you like">
     <button class="primary" id="btnFind">Find explainers</button>
     <p class="cost" id="offerCost"></p>
     <button class="link" id="btnSkip">Not now</button>

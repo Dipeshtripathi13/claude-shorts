@@ -6,7 +6,7 @@
  * Nothing about a message you ignore ever leaves the browser.
  */
 import { BUILD } from './build.js';
-import { extractTopic } from './generated/core/topic.js';
+import { extractTopic, normalizeKey } from './generated/core/topic.js';
 import { rankShorts } from './generated/core/rank.js';
 import { searchShorts, QuotaExceededError, ApiKeyError, verifyKey } from './youtube.js';
 import {
@@ -67,7 +67,7 @@ async function handle(msg, sender) {
 
   switch (msg?.type) {
     case 'turn':      return onTurn(msg, tabId);
-    case 'accept':    return onAccept(tabId);
+    case 'accept':    return onAccept(tabId, msg.query);
     case 'get-state': return getState(tabId);
     case 'dismiss':   return onDismiss(tabId);
     case 'settings':  return { ok: true, settings: await getSettings(), defaults: settingsDefaults() };
@@ -131,7 +131,7 @@ chrome.tabs.onRemoved.addListener((tabId) => { void forgetTab(tabId); });
 /* ----------------------------------------------------------- the search */
 
 /** The click. This is the only path that spends a search. */
-async function onAccept(tabId) {
+async function onAccept(tabId, requested) {
   const offer = await getOffer(tabId);
   if (!offer) return { ok: false, error: 'That suggestion expired. Send another message.' };
 
@@ -140,10 +140,15 @@ async function onAccept(tabId) {
     return { ok: false, error: 'no-key' };
   }
 
+  // The panel shows the phrase in an editable field, so what comes back may not
+  // be what was guessed. A corrected phrase is a better search than the guess
+  // by definition, and it needs its own cache key or it would collide with it.
+  const topic = topicFor(offer.topic, requested);
+
   const variant = variantKey(settings);
   const seen = await getSeen(tabId);
 
-  let videos = await cacheGet(offer.topic.key, variant, settings.cacheTtlHours);
+  let videos = await cacheGet(topic.key, variant, settings.cacheTtlHours);
   let fromCache = videos !== null;
 
   if (!fromCache) {
@@ -153,7 +158,7 @@ async function onAccept(tabId) {
     }
     try {
       await spendQuota(settings.dailySearches);
-      videos = await searchShorts(offer.topic.query, settings);
+      videos = await searchShorts(topic.query, settings);
     } catch (e) {
       if (e instanceof QuotaExceededError) {
         await markQuotaExhausted(settings.dailySearches);
@@ -164,14 +169,14 @@ async function onAccept(tabId) {
       }
       return { ok: false, error: e.message };
     }
-    if (videos.length > 0) await cacheSet(offer.topic.key, variant, videos);
+    if (videos.length > 0) await cacheSet(topic.key, variant, videos);
   }
 
   if (!videos || videos.length === 0) {
-    return { ok: false, error: `No short videos matched "${offer.topic.query}".` };
+    return { ok: false, error: `No short videos matched "${topic.query}".` };
   }
 
-  const ranked = rankShorts(videos, offer.topic, {
+  const ranked = rankShorts(videos, topic, {
     preferUnderSec: settings.preferUnderSec,
     maxDurationSec: settings.maxDurationSec,
     seen,
@@ -181,9 +186,27 @@ async function onAccept(tabId) {
   await clearOffer(tabId);
   await badge('', tabId);
 
-  const result = { topic: offer.topic, videos: ranked, cached: fromCache };
+  const result = { topic, videos: ranked, cached: fromCache };
   await broadcast({ type: 'results', tabId, result });
   return { ok: true, result };
+}
+
+/**
+ * The topic to actually search: the one that was offered, unless the user
+ * edited the field, in which case theirs wins verbatim. `terms` drives title
+ * relevance during ranking, so it has to follow the words too.
+ */
+function topicFor(offered, requested) {
+  const custom = String(requested ?? '').trim().slice(0, 120);
+  if (!custom || custom === offered.query) return offered;
+  return {
+    ...offered,
+    query: custom,
+    label: custom.replace(/\s+explained$/i, ''),
+    key: normalizeKey(custom),
+    terms: custom.split(/\s+/).filter((w) => w.length > 2),
+    edited: true,
+  };
 }
 
 /* --------------------------------------------------------------- shared */

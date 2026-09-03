@@ -50,7 +50,9 @@ function renderOffer(next) {
   }
 
   $('offerSubject').textContent = next.topic.label;
-  $('offerQuery').textContent = `would search “${next.topic.query}”`;
+  // Prefilled, not read-only: the extractor's guess is usually right, and when
+  // it is not the person reading it can simply correct it before searching.
+  $('offerQuery').value = next.topic.query;
   $('offerCost').textContent = next.cached
     ? 'Already saved from an earlier search — costs nothing.'
     : 'Uses one of today’s searches.';
@@ -61,16 +63,22 @@ function renderOffer(next) {
 async function accept() {
   if (!offer) return;
   $('btnFind').disabled = true;
-  $('loadingText').textContent = `Searching for “${offer.topic.query}”…`;
   show('paneLoading');
 
   // The reply already carries the videos. Rendering from the broadcast alone
   // meant one lost message left the panel spinning forever, with the answer
   // sitting unread in a variable. The broadcast is now only how *other* open
   // panels find out.
+  const query = $('offerQuery').value.trim();
+  if (!query) {
+    fail('Type something to search for.');
+    return;
+  }
+  $('loadingText').textContent = `Searching for “${query}”…`;
+
   let res;
   try {
-    res = await withTimeout(send({ type: 'accept' }), 25_000);
+    res = await withTimeout(send({ type: 'accept', query }), 25_000);
   } catch (e) {
     fail(`The search did not come back (${e.message}). The extension's background worker may have been suspended — try again.`);
     return;
@@ -236,6 +244,9 @@ chrome.runtime.onMessage.addListener((msg) => {
 /* -------------------------------------------------------------- controls */
 
 $('btnFind').addEventListener('click', accept);
+$('offerQuery').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') { e.preventDefault(); accept(); }
+});
 $('btnSkip').addEventListener('click', async () => {
   await send({ type: 'dismiss' });
   offer = null;
@@ -289,6 +300,8 @@ $('btnClose').addEventListener('click', () => {
 });
 
 document.addEventListener('keydown', (e) => {
+  // The search field has its own handler and owns typing while it is focused.
+  if (e.target === $('offerQuery')) return;
   if (!$('paneOffer').hidden && (e.key === 'Enter' || e.key === 'f')) { accept(); e.preventDefault(); return; }
   if ($('paneResults').hidden) return;
   if (e.key === 'j' || e.key === 'ArrowDown') { move(1); e.preventDefault(); }
