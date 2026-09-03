@@ -2,40 +2,82 @@
 
 **A "Find shorts" button, for whatever you just asked about.**
 
-You ask Claude to plan a zero-downtime database migration. It goes away for
-forty seconds. You alt-tab, and you are gone for four minutes.
+You ask an AI assistant to plan a zero-downtime database migration. It goes
+away for forty seconds. You alt-tab, and you are gone for four minutes.
 
-`claude-shorts` puts a button in your sidebar instead — **Find shorts: database
-migration**. Click it and you get a handful of 45-second explainers on that
-exact topic. Ignore it and nothing happens at all.
+This repository puts a button in your sidebar instead — **Find explainers:
+database migration**. Click it and you get a handful of 45-second explainers on
+that exact topic. Ignore it and nothing happens at all.
 
 Working out the topic is local and free, so the button can appear on every
 message. **Nothing is ever searched until you click.**
 
-It works with Claude Code (terminal and VS Code), Claude Desktop, claude.ai and
-ChatGPT, and it runs entirely on your machine.
+---
+
+## Two things live here
+
+### Tangent — the browser extension
+
+A standalone extension for Chrome and Brave. Nothing to install on your
+machine: all the logic ships in the package and it searches with your own
+YouTube API key. Runs on sixteen AI chat sites.
+
+**[Install from the Chrome Web Store](https://chromewebstore.google.com/detail/kagpgdldipdgmplebhgohaojbigdnpje)**
+&nbsp;·&nbsp; [source](store-extension/)
+&nbsp;·&nbsp; [privacy](https://dipeshtripathi13.github.io/tangent/privacy.html)
+&nbsp;·&nbsp; [changelog](store-extension/CHANGELOG.md)
+
+### claude-shorts — the CLI and daemon
+
+For Claude Code. Hooks into the terminal and the VS Code sidebar through a
+local daemon, which also serves a browser panel and an MCP server for Claude
+Desktop. Can use `yt-dlp` instead of an API key, so it needs no Google account.
+
+This is the older, more capable half, and the one that cannot be published: its
+panel UI is served from `127.0.0.1`, which Manifest V3 forbids. It is the
+power-user path.
+
+| | Tangent | claude-shorts |
+|---|---|---|
+| Needs a local install | no | yes, a daemon |
+| Works with Claude Code | no | yes, via hooks |
+| Works in the browser | yes, 16 chat sites | yes, claude.ai and ChatGPT |
+| Video source | YouTube API only | YouTube API, `yt-dlp` or Piped |
+| Publishable | yes, and published | no |
+
+Both share one topic extractor: `store-extension/tsconfig.core.json` compiles
+the same `src/core/*.ts` the CLI uses, so a fix to the lexicon or the ranking
+improves both and there is no forked copy to drift.
+
+---
+
+## How it works, in one picture
 
 ```
-  you ─── prompt ───▶ Claude Code
+  you ─── prompt ───▶ Claude Code  /  a chat site
                           │
-                    UserPromptSubmit hook
+                UserPromptSubmit hook  /  content script
                           │
                           ▼
               ┌────────────────────────┐
-              │   local daemon         │   extract topic — free, offline
-              │   "database migration" │
+              │  extract topic         │  local, offline, free
+              │  "database migration"  │
               └───────────┬────────────┘
-                          │ SSE: offer
+                          │ offer
         ┌─────────────────┼─────────────────┐
         ▼                 ▼                 ▼
-   terminal panel   VS Code sidebar   browser side panel
+   terminal panel   VS Code sidebar   browser panel
         │                 │                 │
-        └────── [ Find shorts ] ◀───────────┘   ← you click here
+        └────── [ Find explainers ] ◀───────┘   ← you click here
                           │
                           ▼                 ┌─────────────┐
-                    daemon /accept ────────▶│   YouTube   │
+                       search ─────────────▶│   YouTube   │
                                             └─────────────┘
 ```
+
+The phrase it will search is **editable** before you click, prefilled with the
+guess. The extractor is a heuristic and is sometimes wrong; the person reading
+it always knows whether it got their question right.
 
 ---
 
@@ -77,7 +119,10 @@ In the panel, that second one becomes:
 
 ---
 
-## Quick start
+## The CLI: quick start
+
+Everything from here down is the `claude-shorts` CLI and daemon. For the browser
+extension, see [store-extension/](store-extension/).
 
 ```bash
 npm install -g claude-shorts     # not yet published — see "from source" below
@@ -88,7 +133,7 @@ shorts panel                     # terminal panel — put it in a split beside C
 From source:
 
 ```bash
-git clone https://github.com/Dipeshtripathi13/claude-shorts.git && cd claude-shorts
+git clone https://github.com/Dipeshtripathi13/tangent.git && cd claude-shorts
 npm install && npm run build
 npm link            # puts `shorts` on your PATH
 shorts setup
@@ -115,7 +160,7 @@ shorts ask "what is the CAP theorem"
 |---|---|---|
 | **Claude Code** (terminal) | `UserPromptSubmit` / `Stop` hooks | `shorts panel` in a tmux or iTerm split — press `f` |
 | **Claude Code** (VS Code) | same hooks | a sidebar view in the activity bar |
-| **claude.ai / ChatGPT** | browser extension | a native browser side panel |
+| **claude.ai / ChatGPT** | browser extension | a native browser side panel (or use [Tangent](store-extension/), which needs no daemon) |
 | **Claude Desktop** | MCP server | no button; ask Claude for clips instead |
 | **Anything else** | `POST /event` | the daemon takes events from any client |
 
@@ -212,7 +257,7 @@ shows what is left.
 | Provider | Key needed | Cost | Notes |
 |---|---|---|---|
 | `youtube` *(default)* | yes | 1 search/topic | Official API. 100/day. |
-| `ytdlp` | no | free | Needs `yt-dlp` on PATH. Slower, unofficial. |
+| `ytdlp` | no | free | Needs `yt-dlp` on PATH. Slower, unofficial. Uses YouTube's own under-4-minutes filter, without which its results are almost all long-form. |
 | `piped` | no | free | Public instances are unreliable; self-host for real use. |
 | `mock` | no | free | Deterministic fixtures for tests and UI work. |
 

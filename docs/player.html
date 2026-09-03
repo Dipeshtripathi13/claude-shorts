@@ -57,6 +57,12 @@
   f.setAttribute('allowfullscreen', '');
   var host = document.getElementById('player');
   host.parentNode.replaceChild(f, host);
+
+  // Tell the panel this page is alive. An iframe pointing at a moved or broken
+  // URL still fires `load` for the error page, so silence is the only reliable
+  // signal that the player is not there — and the panel falls back to opening
+  // clips in a window.
+  try { window.parent.postMessage({ tangent: 'player-ready' }, '*'); } catch (e) { /* not framed */ }
 })();
 </script>
 </body>

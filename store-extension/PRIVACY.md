@@ -4,7 +4,7 @@
 **Contact:** tripathidipesh13@gmail.com
 
 Tangent is an open-source browser extension. Its full source is at
-<https://github.com/Dipeshtripathi13/claude-shorts>, and everything below can be
+<https://github.com/Dipeshtripathi13/tangent>, and everything below can be
 verified by reading it.
 
 ## The short version

@@ -1,5 +1,5 @@
 blank_issues_enabled: true
 contact_links:
   - name: Add vocabulary to the lexicon
-    url: https://github.com/Dipeshtripathi13/claude-shorts/blob/main/CONTRIBUTING.md
+    url: https://github.com/Dipeshtripathi13/tangent/blob/main/CONTRIBUTING.md
     about: Adding terms for a field the extractor does not know yet is the best first contribution.

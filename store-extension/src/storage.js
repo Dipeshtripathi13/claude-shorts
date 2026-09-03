@@ -25,7 +25,7 @@ const SETTINGS_DEFAULTS = {
    * a real https page gives YouTube an origin it accepts.
    * Empty means "do not play inline" — clips open in a window instead.
    */
-  playerBase: 'https://dipeshtripathi13.github.io/claude-shorts/player.html',
+  playerBase: 'https://dipeshtripathi13.github.io/tangent/player.html',
   /**
    * Narrow the page so the panel sits beside the conversation rather than over
    * it. Turn off if a site's layout reacts badly.

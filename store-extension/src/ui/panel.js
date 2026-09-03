@@ -134,7 +134,7 @@ function paint() {
   img.loading = 'lazy';
   img.referrerPolicy = 'no-referrer';
 
-  if (playerBase) {
+  if (playerBase && !playerDead) {
     // The player is loaded with the result rather than behind our own play
     // button. Lazy-loading cost two clicks: ours, then YouTube's, because user
     // activation does not reach a cross-origin iframe created after the click
@@ -146,8 +146,9 @@ function paint() {
     f.allowFullscreen = true;
     f.title = v.title;
     frame.appendChild(f);
+    watchForPlayer();
   } else {
-    // No player page configured: fall back to the thumbnail and a popup window.
+    // No player page, or it never answered: thumbnail and a popup window.
     const btn = document.createElement('button');
     btn.className = 'play';
     btn.setAttribute('aria-label', `Play: ${v.title}`);
@@ -214,6 +215,29 @@ function openFallback(url, width, height, left, top) {
   const w = window.open(url, '_blank', `popup=yes,width=${width},height=${height},left=${left},top=${top}`);
   if (w) w.opener = null;
 }
+
+/**
+ * The player page posts a greeting when it loads. If none arrives, the URL has
+ * moved or the host is down — a cross-origin iframe fires `load` for an error
+ * page just the same, so waiting for the greeting is the only way to know.
+ */
+let playerDead = false;
+let playerTimer = null;
+
+function watchForPlayer() {
+  clearTimeout(playerTimer);
+  playerTimer = setTimeout(() => {
+    playerDead = true;
+    say('The player page did not respond. Clips will open in a window instead.');
+    paint();
+  }, 5000);
+}
+
+window.addEventListener('message', (e) => {
+  if (e.data?.tangent !== 'player-ready') return;
+  clearTimeout(playerTimer);
+  playerDead = false;
+});
 
 function move(delta) {
   if (!result) return;

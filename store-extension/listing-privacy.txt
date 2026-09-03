@@ -103,4 +103,4 @@ Then certify all three:
 
 === PRIVACY POLICY URL ===
 
-https://dipeshtripathi13.github.io/claude-shorts/privacy.html
+https://dipeshtripathi13.github.io/tangent/privacy.html

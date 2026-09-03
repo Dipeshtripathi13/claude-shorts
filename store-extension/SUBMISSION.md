@@ -12,10 +12,10 @@ this one submission covers both browsers.
       [chrome.google.com/webstore/devconsole](https://chrome.google.com/webstore/devconsole)
 - [ ] **Turn on 2FA** for that Google account (required to publish)
 - [x] **Privacy policy is hosted** at
-      `https://dipeshtripathi13.github.io/claude-shorts/privacy.html` — paste
+      `https://dipeshtripathi13.github.io/tangent/privacy.html` — paste
       this into the dashboard's Privacy policy URL field.
 - [x] **Homepage** for the listing:
-      `https://dipeshtripathi13.github.io/claude-shorts/`
+      `https://dipeshtripathi13.github.io/tangent/`
 - [ ] **Check the name is free** — search the store for "Tangent". If it is
       taken, change `name` in `manifest.json` and the headings in the UI files.
 
@@ -92,7 +92,7 @@ yours and nothing is routed through anyone else's service. Settings walks
 you through creating one; it takes a few minutes.
 
 Open source, MIT licensed:
-https://github.com/Dipeshtripathi13/claude-shorts
+https://github.com/Dipeshtripathi13/tangent
 
 Not affiliated with Google, YouTube, Anthropic or OpenAI.
 ```
@@ -111,8 +111,8 @@ privacy policy.
 Expect a reviewer to ask why; the answer is that they are all the same single
 purpose and each is individually switchable in settings.
 
-**Homepage URL:** `https://dipeshtripathi13.github.io/claude-shorts/`
-**Privacy policy URL:** `https://dipeshtripathi13.github.io/claude-shorts/privacy.html`
+**Homepage URL:** `https://dipeshtripathi13.github.io/tangent/`
+**Privacy policy URL:** `https://dipeshtripathi13.github.io/tangent/privacy.html`
 **Support email:** tripathidipesh13@gmail.com
 
 **Category:** Productivity

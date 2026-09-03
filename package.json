@@ -40,11 +40,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Dipeshtripathi13/claude-shorts.git"
+    "url": "git+https://github.com/Dipeshtripathi13/tangent.git"
   },
   "bugs": {
-    "url": "https://github.com/Dipeshtripathi13/claude-shorts/issues"
+    "url": "https://github.com/Dipeshtripathi13/tangent/issues"
   },
-  "homepage": "https://github.com/Dipeshtripathi13/claude-shorts#readme",
+  "homepage": "https://github.com/Dipeshtripathi13/tangent#readme",
   "author": "Dipesh Tripathi"
 }

@@ -58,7 +58,7 @@ There is no Tangent server, no analytics, no tracking and no account.
 Everything is stored in your own browser.
 
 Full privacy policy:
-https://dipeshtripathi13.github.io/claude-shorts/privacy.html
+https://dipeshtripathi13.github.io/tangent/privacy.html
 
 
 WHERE IT WORKS
@@ -95,7 +95,7 @@ WORTH KNOWING
 OPEN SOURCE
 
 MIT licensed. Every claim above can be checked by reading the source:
-https://github.com/Dipeshtripathi13/claude-shorts
+https://github.com/Dipeshtripathi13/tangent
 
 Tangent is an independent project. It is not affiliated with, endorsed by,
 or sponsored by Google, YouTube, Anthropic or OpenAI.
