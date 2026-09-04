@@ -54,53 +54,39 @@ This is the part that actually matters. Post it immediately after launching.
 Do not sell — explain why it exists and be honest about the limits.
 
 ```
-Hi Product Hunt 👋
+Hi PH 👋
 
-I built Tangent because of a habit I couldn't break. I'd ask Claude something
-substantial — plan a zero-downtime database migration, explain the CAP theorem —
-and while it thought, I'd alt-tab. Forty seconds of waiting reliably became four
-minutes of not-waiting.
+I kept asking Claude something big, waiting 40 seconds while it thought, and
+alt tabbing. Then looking up four minutes later.
 
-The obvious version of this idea is bad. A thing that offers you videos while
-you work is a distraction machine, and I nearly didn't build it for that reason.
-What changed my mind was realising I wasn't competing with concentration. I was
-competing with the alt-tab. That gap is already lost.
+So I built Tangent. Ask an AI something worth understanding and a button shows
+up: "Find explainers: cap theorem". Click it and you get a few 15 to 90 second
+YouTube Shorts on exactly that. Don't click and nothing happens.
 
-So Tangent is built to be ignorable:
+I almost didn't build it. Offering videos while you work sounds like a
+distraction machine. But I wasn't competing with focus, I was competing with
+the alt tab. That time was already gone.
 
-• It raises a button, never a video. Working out the topic happens on your own
-  device and costs nothing, so ignoring the button is free — and it is the
-  normal case.
-• It knows a question from a chore. "What is photosynthesis" gets a button.
-  "Rerun the tests", "commit this", "yes" get nothing at all.
-• No feed. A fixed set of clips about one topic, then it stops. No autoplay,
-  no recommendations, no "up next".
+So it's easy to ignore. It shows a button, not a video. It stays quiet for
+chores like "rerun the tests" or "commit this". No feed, no autoplay, no up
+next.
 
-One constraint shaped the whole architecture: YouTube grants 100 searches per
-day per key. Not 10,000 — 100. That is why searching is opt-in rather than
-automatic. A heavy day might raise fifty buttons and spend three searches,
-because you only clicked three times. The limitation made the product better
-than I would have designed it otherwise.
+One thing shaped the whole build: YouTube gives you 100 searches a day, not
+10,000. That's why nothing is searched until you click. A busy day might show
+50 buttons and spend 3 searches.
 
-On privacy: it reads only the message you just typed, only on AI chat sites.
-Before anything is searched it strips code, file paths, URLs and anything shaped
-like an API key — and if a message looks like it contains a credential it drops
-it entirely. What reaches YouTube is a phrase like "database migration postgres
-explained", never your message. There's no server, no analytics, no account.
+On privacy, it only reads the message you just typed, and only on AI chat
+sites. It strips code, file paths and anything that looks like a key before
+searching. YouTube sees a phrase like "cap theorem explained", never your
+message. No server, no analytics, no account.
 
-Honest caveats:
-• You need your own free YouTube API key. There's no shared key, by design.
-• The topic extractor is a heuristic, not a model. It's wrong sometimes — so
-  the phrase it will search sits in an editable box you can correct before
-  clicking.
-• Shorts are for orientation, not understanding. This is for the gap in your
-  attention, not a substitute for reading the docs.
+Two honest caveats. You need your own free YouTube API key. And the topic
+guesser is just heuristics, so it gets things wrong sometimes, which is why you
+can edit the phrase before you search.
 
-It's MIT licensed and the whole thing is readable, including the parts I got
-wrong on the way:
-https://github.com/Dipeshtripathi13/tangent
+Open source: https://github.com/Dipeshtripathi13/tangent
 
-Happy to answer anything — especially if you think the premise is wrong.
+Happy to answer anything, especially if you think the idea is wrong.
 ```
 
 ---
