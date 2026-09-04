@@ -34,9 +34,9 @@ does not oversell. B is the most concrete if you want the mechanic up front.
 
 ```
 Tangent spots the concept in the message you just sent an AI assistant and
-finds YouTube Shorts that explain it. A button appears — click it and you get
-a handful of 15-90 second explainers. Ignore it and nothing happens. Nothing
-is ever searched until you click.
+finds YouTube Shorts that explain it. A button appears — click it for a
+handful of 15-90 second explainers. Ignore it and nothing happens. Nothing is
+searched until you click.
 ```
 
 ## Topics
