@@ -44,6 +44,14 @@
     padding: 20px; margin: 26px 0; font-size: 15px;
   }
   .demo .q { color: var(--muted); margin: 0 0 12px; }
+  .cta { margin: 0 0 34px; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+  .install {
+    display: inline-block; background: var(--accent); color: var(--accent-ink);
+    text-decoration: none; font-weight: 600; font-size: 16px;
+    padding: 12px 22px; border-radius: 9px;
+  }
+  .install:hover { filter: brightness(1.07); }
+  .ctanote { color: var(--muted); font-size: 14px; }
   .btn {
     display: inline-block; background: var(--accent); color: var(--accent-ink);
     border-radius: 8px; padding: 8px 16px; font-weight: 600; font-size: 15px;
@@ -63,6 +71,11 @@
   <p class="lead">YouTube Shorts that explain whatever you just asked your AI
      assistant.</p>
   <p class="sub">Browser extension for Chrome and Brave. Open source, MIT.</p>
+
+  <p class="cta">
+    <a class="install" href="https://chromewebstore.google.com/detail/kagpgdldipdgmplebhgohaojbigdnpje">Add to Chrome — it's free</a>
+    <span class="ctanote">Works in Brave too</span>
+  </p>
 
   <div class="demo">
     <p class="q">You ask Claude to plan a zero-downtime database migration&hellip;</p>
@@ -101,6 +114,7 @@
 
   <h2>Get it</h2>
   <div class="links">
+    <a href="https://chromewebstore.google.com/detail/kagpgdldipdgmplebhgohaojbigdnpje">Chrome Web Store</a>
     <a href="https://github.com/Dipeshtripathi13/tangent">Source on GitHub</a>
     <a href="https://github.com/Dipeshtripathi13/tangent/tree/main/store-extension">Build it yourself</a>
     <a href="privacy.html">Privacy</a>
