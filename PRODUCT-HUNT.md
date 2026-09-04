@@ -54,26 +54,24 @@ This is the part that actually matters. Post it immediately after launching.
 Do not sell — explain why it exists and be honest about the limits.
 
 ```
-Hi PH 👋
+Hi Product Hunt!
 
-I kept asking Claude something big, waiting 40 seconds while it thought, and
-alt tabbing. Then looking up four minutes later.
+I'd ask Claude or ChatGPT something, read the answer, and still not really
+have it. Then I'd open YouTube, type roughly the same question, watch a short,
+and come back. Every time.
 
-So I built Tangent. Ask an AI something worth understanding and a button shows
-up: "Find explainers: cap theorem". Click it and you get a few 15 to 90 second
-YouTube Shorts on exactly that. Don't click and nothing happens.
+So I built Tangent. After you send a message, a button shows up saying
+something like "Find explainers: cap theorem". It has already worked out what
+you were asking about. Click it and you get a few 15 to 90 second YouTube
+Shorts on exactly that, playing right next to the chat. Don't click and nothing
+happens.
+
+It's the YouTube trip I was already making, minus the leaving and the retyping.
 
 I almost didn't build it. Offering videos while you work sounds like a
-distraction machine. But I wasn't competing with focus, I was competing with
-the alt tab. That time was already gone.
-
-So it's easy to ignore. It shows a button, not a video. It stays quiet for
-chores like "rerun the tests" or "commit this". No feed, no autoplay, no up
-next.
-
-One thing shaped the whole build: YouTube gives you 100 searches a day, not
-10,000. That's why nothing is searched until you click. A busy day might show
-50 buttons and spend 3 searches.
+distraction machine. So it tries hard to stay out of the way. It shows a
+button, never a video. It stays quiet for chores like "rerun the tests" or
+"commit this". No feed, no autoplay, no up next.
 
 On privacy, it only reads the message you just typed, and only on AI chat
 sites. It strips code, file paths and anything that looks like a key before
