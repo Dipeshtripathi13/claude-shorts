@@ -93,7 +93,8 @@ Happy to answer anything, especially if you think the idea is wrong.
 
 ## Assets to make by hand
 
-- [ ] **Thumbnail** — 240×240. The extension icon works; `store-extension/icons/icon128.png` upscaled, or redraw the same mark at 240.
+- [x] **Thumbnail** — 240×240, generated: `store-extension/icons/product-hunt-240.png`.
+      Regenerate with `npm run build:icons` from `store-extension/`.
 - [ ] **Gallery images** — 1270×760, three or four. The order that tells the story:
       1. The button appearing right after a real question — this is the whole product in one frame
       2. Results, with a clip playing beside the conversation

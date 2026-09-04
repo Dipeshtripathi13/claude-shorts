@@ -40,18 +40,22 @@ function triangleSDF(px, py, a, b, c) {
   return hasNeg && hasPos ? 1 : -1;   // inside when all signs agree
 }
 
-function render(size) {
+function render(size, opts = {}) {
   const px = new Uint8Array(size * size * 4);
   const s = size;
-  const pad = s * 0.14;
+  // A launch thumbnail sits on someone else's page, so it needs its own ground
+  // and a mark that fills more of the frame to stay legible small.
+  const bg = opts.background ?? null;
+  const pad = s * (bg ? 0.24 : 0.14);
   const cardHalfW = (s - pad * 2) * 0.34;
   const cardHalfH = (s - pad * 2) * 0.5;
   const cx = s / 2;
   const cy = s / 2;
   const radius = Math.max(1, s * 0.11);
 
-  // Play triangle, centred, sized to the card.
-  const t = s * 0.15;
+  // Play triangle, centred, sized against the card rather than the canvas so
+  // the proportions hold at any padding.
+  const t = cardHalfW * 0.61;
   const a = [cx - t * 0.75, cy - t];
   const b = [cx - t * 0.75, cy + t];
   const c = [cx + t * 0.95, cy];
@@ -74,15 +78,23 @@ function render(size) {
       const alpha = cov / total;
       const holeAmt = hole / total;
       const i = (y * s + x) * 4;
-      const colour = [
+      const mark = [
         INK[0] + (HOLE[0] - INK[0]) * holeAmt,
         INK[1] + (HOLE[1] - INK[1]) * holeAmt,
         INK[2] + (HOLE[2] - INK[2]) * holeAmt,
       ];
-      px[i] = Math.round(colour[0]);
-      px[i + 1] = Math.round(colour[1]);
-      px[i + 2] = Math.round(colour[2]);
-      px[i + 3] = Math.round(alpha * 255);
+      if (bg) {
+        // Composite the mark over an opaque ground.
+        px[i] = Math.round(bg[0] + (mark[0] - bg[0]) * alpha);
+        px[i + 1] = Math.round(bg[1] + (mark[1] - bg[1]) * alpha);
+        px[i + 2] = Math.round(bg[2] + (mark[2] - bg[2]) * alpha);
+        px[i + 3] = 255;
+      } else {
+        px[i] = Math.round(mark[0]);
+        px[i + 1] = Math.round(mark[1]);
+        px[i + 2] = Math.round(mark[2]);
+        px[i + 3] = Math.round(alpha * 255);
+      }
     }
   }
   return px;
@@ -141,3 +153,8 @@ for (const size of SIZES) {
 
 // The store listing needs a 128 too; it is the same asset.
 console.log(`  (icon128.png doubles as the Chrome Web Store icon)`);
+
+// Product Hunt wants 240x240, and an opaque ground so it reads on any page.
+const GROUND = [23, 22, 26];
+writeFileSync(join(OUT, 'product-hunt-240.png'), toPng(render(240, { background: GROUND }), 240));
+console.log('  wrote icons/product-hunt-240.png  (Product Hunt thumbnail)');
